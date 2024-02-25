@@ -2,6 +2,7 @@ package com.sibghat.vape_shop.domains;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -30,7 +31,7 @@ public class Order {
     private BigInteger id;
 
     @NotNull
-    private OrderStatus Status = OrderStatus.SHIPPED;
+    private OrderStatus Status ;
 
     private boolean couponUsed;
 
@@ -43,16 +44,16 @@ public class Order {
     private BigDecimal total;
 
     @NotNull
+    @FutureOrPresent
     @Column(
             nullable = false,
             updatable = false
     )
     private LocalDateTime createdAt;
 
-    @NotNull
+    @FutureOrPresent
     private LocalDateTime lastModifiedAt;
 
-    @NotNull
     @OneToOne
     @JoinColumn(
             name = "last_modified_by"

@@ -39,7 +39,6 @@ public class Cart {
     )
     private LocalDateTime createdAt;
 
-    @NotNull
     @FutureOrPresent
     private LocalDateTime lastModifiedAt;
 }

@@ -39,7 +39,6 @@ public class CouponCode {
     )
     private LocalDateTime createdAt;
 
-    @NotNull
     @FutureOrPresent
     private LocalDateTime lastModifiedAt;
 
@@ -50,7 +49,6 @@ public class CouponCode {
     )
     private User createdBy;
 
-    @NotNull
     @OneToOne
     @JoinColumn(
             name = "last_modified_by"

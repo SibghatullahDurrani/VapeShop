@@ -16,7 +16,8 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "products")
-public class Product {
+public class Product { // TODO implement further domains
+    //https://stackoverflow.com/questions/23837561/jpa-2-0-many-to-many-with-extra-column
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "products_generator")
@@ -60,13 +61,14 @@ public class Product {
     private int stock;
 
     @NotNull
+    @FutureOrPresent
     @Column(
             nullable = false,
             updatable = false
     )
     private LocalDateTime createdAt;
 
-    @NotNull
+    @FutureOrPresent
     private LocalDateTime lastModifiedAt;
 
     @NotNull
@@ -76,7 +78,6 @@ public class Product {
     )
     private User createdBy;
 
-    @NotNull
     @OneToOne
     @JoinColumn(
             name = "last_modified_by"

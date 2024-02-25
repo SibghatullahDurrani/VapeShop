@@ -75,7 +75,6 @@ public class User {
     )
     private LocalDateTime createdAt;
 
-    @NotNull
     @FutureOrPresent
     @Column(
             nullable = false

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "pictures")
-public class Picture {
+public class Picture { // TODO add the relationship to the product domain and add validation to the attributes
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pictures_generator")

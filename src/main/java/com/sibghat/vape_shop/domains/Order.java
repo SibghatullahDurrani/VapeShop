@@ -2,7 +2,6 @@ package com.sibghat.vape_shop.domains;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -11,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 @Data
@@ -24,7 +24,10 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orders_generator")
     @SequenceGenerator(name = "orders_generator", sequenceName = "orders_seq", allocationSize = 1)
-    private Integer id;
+    @Column(
+            columnDefinition = "BIGINT"
+    )
+    private BigInteger id;
 
     @NotNull
     private OrderStatus Status = OrderStatus.SHIPPED;
@@ -49,8 +52,12 @@ public class Order {
     @NotNull
     private LocalDateTime lastModifiedAt;
 
-    @NotBlank
-    private String lastModifiedBy;
+    @NotNull
+    @OneToOne
+    @JoinColumn(
+            name = "last_modified_by"
+    )
+    private User lastModifiedBy;
 
     @ManyToOne
     @JoinColumn(

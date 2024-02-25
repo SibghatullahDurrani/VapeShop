@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 @Data
@@ -22,7 +23,10 @@ public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_generator")
     @SequenceGenerator(name = "address_generator", sequenceName = "address_seq", allocationSize = 1)
-    private Integer id;
+    @Column(
+            columnDefinition = "BIGINT"
+    )
+    private BigInteger id;
 
     @NotBlank
     private String street;

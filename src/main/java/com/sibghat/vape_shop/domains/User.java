@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,7 +26,10 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_generator")
     @SequenceGenerator(name = "users_generator", sequenceName = "users_seq", allocationSize = 1)
-    private Integer id;
+    @Column(
+            columnDefinition = "BIGINT"
+    )
+    private BigInteger id;
 
     @NotBlank(message = "username must not be empty")
     @Column(
@@ -52,6 +56,9 @@ public class User {
             unique = true
     )
     private String contactNumber;
+
+    @NotBlank
+    private String role;
 
     @Column(
             unique = true

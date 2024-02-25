@@ -3,7 +3,6 @@ package com.sibghat.vape_shop.domains;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +20,7 @@ import java.time.LocalDateTime;
 public class CouponCode {
 
     @Id
-    private Integer couponCode;
+    private String couponCode;
 
     @Min(0)
     private int times_used;
@@ -44,11 +43,19 @@ public class CouponCode {
     @FutureOrPresent
     private LocalDateTime lastModifiedAt;
 
-    @NotBlank
-    private String createdBy;
+    @NotNull
+    @OneToOne
+    @JoinColumn(
+            name = "created_by"
+    )
+    private User createdBy;
 
-    @NotBlank
-    private String lastModifiedBy;
+    @NotNull
+    @OneToOne
+    @JoinColumn(
+            name = "last_modified_by"
+    )
+    private User lastModifiedBy;
 
     @OneToOne
     @JoinColumn(

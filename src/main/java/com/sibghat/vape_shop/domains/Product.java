@@ -99,5 +99,11 @@ public class Product { // TODO implement further domains
     )
     private List<OrderProduct> orderProducts;
 
+    @OneToMany(
+            mappedBy = "productId"
+    )
+    private List<CartProduct> cartProducts;
+
+
 
 }

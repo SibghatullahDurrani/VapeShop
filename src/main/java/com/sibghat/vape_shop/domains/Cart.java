@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -41,4 +42,9 @@ public class Cart {
 
     @FutureOrPresent
     private LocalDateTime lastModifiedAt;
+
+    @OneToMany(
+            mappedBy = "cartId"
+    )
+    private List<CartProduct> cartProducts;
 }

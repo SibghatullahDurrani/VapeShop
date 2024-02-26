@@ -1,4 +1,4 @@
-package com.sibghat.vape_shop.domains;
+package com.sibghat.vape_shop.domains.ids;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

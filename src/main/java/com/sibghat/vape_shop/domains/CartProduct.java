@@ -1,6 +1,6 @@
 package com.sibghat.vape_shop.domains;
 
-import com.sibghat.vape_shop.domains.ids.OrderProductId;
+import com.sibghat.vape_shop.domains.ids.CartProductId;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -14,13 +14,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "orders_products")
-@IdClass(OrderProductId.class)
-public class OrderProduct {
+@Table(name = "carts_products")
+@IdClass(CartProductId.class)
+public class CartProduct {
 
     @Id
     @ManyToOne
-    @NotNull
+    @JoinColumn(
+            name = "cart_id",
+            nullable = false,
+            columnDefinition = "BIGINT"
+    )
+    private Cart cartId;
+
+    @Id
+    @ManyToOne
     @JoinColumn(
             name = "product_id",
             nullable = false,
@@ -28,18 +36,8 @@ public class OrderProduct {
     )
     private Product productId;
 
-    @Id
-    @ManyToOne
-    @NotNull
-    @JoinColumn(
-            name = "order_id",
-            nullable = false,
-            columnDefinition = "BIGINT"
-    )
-    private Order orderId;
-
-    @NotNull
     @Positive
+    @NotNull
     private int quantity;
 
 }

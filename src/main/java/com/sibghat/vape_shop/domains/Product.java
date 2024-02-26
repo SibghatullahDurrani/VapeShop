@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class Product { // TODO implement further domains
     @Column(
             columnDefinition = "BIGINT"
     )
-    private BigInteger id;
+    private Long id;
 
     @NotBlank
     private String vendorName;
@@ -116,6 +115,11 @@ public class Product { // TODO implement further domains
 
     )
     private List<Category> categories;
+
+    @OneToMany(
+            mappedBy = "product"
+    )
+    private List<ProductsContent> productsContents;
 
 
 

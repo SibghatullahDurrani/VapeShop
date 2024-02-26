@@ -10,7 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 @Data
@@ -27,7 +26,7 @@ public class Picture { // TODO add the relationship to the product domain and ad
     @Column(
             columnDefinition = "BIGINT"
     )
-    private BigInteger id;
+    private Long id;
 
     @NotBlank
     private String path;

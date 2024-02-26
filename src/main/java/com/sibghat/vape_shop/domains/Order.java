@@ -11,7 +11,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,7 +28,7 @@ public class Order {
     @Column(
             columnDefinition = "BIGINT"
     )
-    private BigInteger id;
+    private Long id;
 
     @NotNull
     private OrderStatus Status ;

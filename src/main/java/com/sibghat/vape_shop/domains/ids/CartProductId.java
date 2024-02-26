@@ -2,7 +2,6 @@ package com.sibghat.vape_shop.domains.ids;
 
 import com.sibghat.vape_shop.domains.Cart;
 import com.sibghat.vape_shop.domains.Product;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

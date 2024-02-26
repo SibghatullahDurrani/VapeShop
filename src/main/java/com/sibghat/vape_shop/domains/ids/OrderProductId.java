@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 @Data
 @AllArgsConstructor
@@ -14,6 +13,6 @@ import java.math.BigInteger;
 @Builder
 public class OrderProductId implements Serializable {
 
-    private BigInteger productId;
-    private BigInteger orderId;
+    private Long productId;
+    private Long orderId;
 }

@@ -10,7 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 @Data
@@ -27,7 +26,7 @@ public class Address {
     @Column(
             columnDefinition = "BIGINT"
     )
-    private BigInteger id;
+    private Long id;
 
     @NotBlank
     private String street;

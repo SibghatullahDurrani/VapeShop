@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Data
@@ -24,7 +23,7 @@ public class Category {
     @Column(
             columnDefinition = "BIGINT"
     )
-    private BigInteger id;
+    private Long id;
 
     @NotBlank
     private String name;

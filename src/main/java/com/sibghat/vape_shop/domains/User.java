@@ -10,7 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,7 +28,7 @@ public class User {
     @Column(
             columnDefinition = "BIGINT"
     )
-    private BigInteger id;
+    private Long id;
 
     @NotBlank(message = "username must not be empty")
     @Column(

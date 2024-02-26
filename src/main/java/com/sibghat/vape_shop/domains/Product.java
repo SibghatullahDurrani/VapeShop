@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -83,6 +84,11 @@ public class Product { // TODO implement further domains
             name = "last_modified_by"
     )
     private User lastModifiedBy;
+
+    @OneToMany(
+            mappedBy = "product"
+    )
+    private List<Picture> pictures;
 
 
 }

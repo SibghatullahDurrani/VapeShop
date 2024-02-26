@@ -1,6 +1,10 @@
 package com.sibghat.vape_shop.domains;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,19 +29,31 @@ public class Picture { // TODO add the relationship to the product domain and ad
     )
     private BigInteger id;
 
+    @NotBlank
     private String path;
 
+    @Positive
     private float size;
 
+    @NotBlank
     private String fileType;
 
+    @NotNull
+    @FutureOrPresent
+    @Column(
+            updatable = false,
+            nullable = false
+    )
     private LocalDateTime createdAt;
 
+    @FutureOrPresent
     private LocalDateTime lastModifiedAt;
 
     @OneToOne
     @JoinColumn(
-            name = "created_by"
+            name = "created_by",
+            updatable = false,
+            nullable = false
     )
     private User createdBy;
 
@@ -46,5 +62,11 @@ public class Picture { // TODO add the relationship to the product domain and ad
             name = "last_modified_by"
     )
     private User lastModifiedBy;
+
+    @ManyToOne
+    @JoinColumn(
+            name = "product_id"
+    )
+    private Product product;
 
 }

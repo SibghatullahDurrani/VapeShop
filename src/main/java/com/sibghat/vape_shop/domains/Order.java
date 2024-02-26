@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -65,6 +66,11 @@ public class Order {
             name = "user_id"
     )
     private User user;
+
+    @OneToMany(
+            mappedBy = "orderId"
+    )
+    private List<OrderProduct> orderProducts;
 
     private enum OrderStatus{
         SHIPPED,

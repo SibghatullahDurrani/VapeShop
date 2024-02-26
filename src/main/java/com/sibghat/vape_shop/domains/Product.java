@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,7 +24,10 @@ public class Product { // TODO implement further domains
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "products_generator")
     @SequenceGenerator(name = "products_generator", sequenceName = "products_seq", allocationSize = 1)
-    private Integer id;
+    @Column(
+            columnDefinition = "BIGINT"
+    )
+    private BigInteger id;
 
     @NotBlank
     private String vendorName;
@@ -89,6 +93,11 @@ public class Product { // TODO implement further domains
             mappedBy = "product"
     )
     private List<Picture> pictures;
+
+    @OneToMany(
+            mappedBy = "productId"
+    )
+    private List<OrderProduct> orderProducts;
 
 
 }

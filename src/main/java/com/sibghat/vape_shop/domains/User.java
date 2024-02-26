@@ -2,7 +2,6 @@ package com.sibghat.vape_shop.domains;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -11,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Data
@@ -57,7 +57,8 @@ public class User {
     private String contactNumber;
 
     @NotBlank
-    private String role;
+    @Builder.Default
+    private String role="ROLE_USER";
 
     @Column(
             unique = true
@@ -67,17 +68,13 @@ public class User {
     private boolean enabled;
 
     @NotNull
-    @FutureOrPresent
+    @Builder.Default
     @Column(
             updatable = false,
             nullable = false
     )
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Asia/Karachi"));
 
-    @FutureOrPresent
-    @Column(
-            nullable = false
-    )
     private LocalDateTime lastModifiedAt;
 
     @OneToMany(

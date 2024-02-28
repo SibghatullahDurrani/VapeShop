@@ -1,13 +1,14 @@
 package com.sibghat.vape_shop.controllers;
 
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
+import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.services.user.AdminUserServices;
 import com.sibghat.vape_shop.services.user.IAdminUserServices;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AdminUserController {
@@ -24,6 +25,18 @@ public class AdminUserController {
     """)
     public AddUserDto addAdmin(@RequestBody AddUserDto adminToAdd, Authentication authentication){
         return adminUserServices.addAdmin(adminToAdd,authentication.getName());
+    }
+
+    @GetMapping("/users/admins/{username}")
+    @PreAuthorize("""
+    hasRole("ADMIN") and
+    #username == authentication.name
+""")
+    @PostAuthorize("""
+    returnObject.body.username == authentication.name
+""")
+    public ResponseEntity<GetUserDto> getAdmin(@PathVariable String username) {
+        return adminUserServices.getAdmin(username);
     }
 
 }

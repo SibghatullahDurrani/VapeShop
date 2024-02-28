@@ -77,6 +77,11 @@ public class User {
 
     private LocalDateTime lastModifiedAt;
 
+    @Column(
+            nullable = false
+    )
+    private String createdBy;
+
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -30,5 +31,19 @@ public class Category {
 
     @ManyToMany
     private List<Product> products;
+
+    @Column(
+            nullable = false
+    )
+    private LocalDateTime createdAt;
+
+    private LocalDateTime lastModifiedAt;
+
+    @Column(
+            nullable = false
+    )
+    private String createdBy;
+
+    private String lastModifiedBy;
 
 }

@@ -1,31 +1,60 @@
 package com.sibghat.vape_shop.services.user;
 
-import com.sibghat.vape_shop.dtos.user.AddClientDto;
+import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.domains.User;
-import com.sibghat.vape_shop.mappers.user.AddClientMapper;
+import com.sibghat.vape_shop.dtos.user.GetUserDto;
+import com.sibghat.vape_shop.mappers.user.AddUserMapper;
+import com.sibghat.vape_shop.mappers.user.GetUserMapper;
 import com.sibghat.vape_shop.repositories.UserRepository;
+import com.sibghat.vape_shop.services.conditionEvaluators.IUserRelatedConditionEvaluators;
+import com.sibghat.vape_shop.services.conditionEvaluators.UserRelatedConditionEvaluators;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserServices implements IUserServices {
 
     private final UserRepository userRepository;
-    private final AddClientMapper addClientMapper;
-
+    private final AddUserMapper addUserMapper;
     private final PasswordEncoder passwordEncoder;
+    private final IUserRelatedConditionEvaluators userRelatedConditionEvaluators;
+    private final GetUserMapper getUserMapper;
 
-    public UserServices(UserRepository userRepository, AddClientMapper addClientMapper, PasswordEncoder passwordEncoder) {
+    public UserServices(
+            UserRepository userRepository,
+            AddUserMapper addUserMapper,
+            PasswordEncoder passwordEncoder,
+            UserRelatedConditionEvaluators userRelatedConditionEvaluators,
+            GetUserMapper getUserMapper
+    ) {
         this.userRepository = userRepository;
-        this.addClientMapper = addClientMapper;
+        this.addUserMapper = addUserMapper;
         this.passwordEncoder = passwordEncoder;
+        this.userRelatedConditionEvaluators = userRelatedConditionEvaluators;
+        this.getUserMapper = getUserMapper;
     }
 
     @Override
-    public AddClientDto addClient(AddClientDto addClientDto) {
-        User user = addClientMapper.mapTo(addClientDto);
+    public ResponseEntity<AddUserDto> addUser(AddUserDto addUserDto) {
+        userRelatedConditionEvaluators.checkThatUserDoesNotAlreadyExistsBeforeAddingANewUser(addUserDto);
+        User user = addUserMapper.mapTo(addUserDto);
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
-        return addClientMapper.mapFrom(userRepository.save(user));
+        user.setCreatedBy(addUserDto.getUsername());
+
+        return new ResponseEntity<>(addUserMapper.mapFrom(userRepository.save(user)), HttpStatus.OK);
+
     }
+
+    @Override
+    public ResponseEntity<GetUserDto> getUser(String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+        return user.map(value -> new ResponseEntity<>(getUserMapper.mapFrom(value), HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
 }

@@ -17,7 +17,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "products")
-public class Product { // TODO implement further domains
+public class Product {
     //https://stackoverflow.com/questions/23837561/jpa-2-0-many-to-many-with-extra-column
 
     @Id
@@ -75,18 +75,9 @@ public class Product { // TODO implement further domains
     @FutureOrPresent
     private LocalDateTime lastModifiedAt;
 
-    @NotNull
-    @OneToOne
-    @JoinColumn(
-            name = "created_by"
-    )
-    private User createdBy;
+    private String createdBy;
 
-    @OneToOne
-    @JoinColumn(
-            name = "last_modified_by"
-    )
-    private User lastModifiedBy;
+    private String lastModifiedBy;
 
     @OneToMany(
             mappedBy = "product"

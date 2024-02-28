@@ -55,12 +55,21 @@ public class Address {
     )
     private LocalDateTime createdAt;
 
+
     @FutureOrPresent
     private LocalDateTime lastModifiedAt;
 
+    @Column(
+            nullable = false
+    )
+    private String createdBy;
+
+    private String lastModifiedBy;
+
     @ManyToOne
     @JoinColumn(
-            name = "user_id"
+            name = "user_id",
+            nullable = false
     )
     private User user;
 

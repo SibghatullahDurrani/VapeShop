@@ -1,12 +1,14 @@
 package com.sibghat.vape_shop.controllers;
 
-import com.sibghat.vape_shop.dtos.user.AddClientDto;
+import com.sibghat.vape_shop.dtos.user.AddUserDto;
+import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.services.user.IUserServices;
 import com.sibghat.vape_shop.services.user.UserServices;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
@@ -18,9 +20,19 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public AddClientDto addClient(@Valid @RequestBody AddClientDto addClientDto){
-        return userServices.addClient(addClientDto);
-
+    public ResponseEntity<AddUserDto> addUser(@Valid @RequestBody AddUserDto addUserDto){
+        return userServices.addUser(addUserDto);
     }
 
+    @GetMapping("/users/{username}")
+    @PreAuthorize("""
+    #username == authentication.name and
+    hasRole("USER")
+""")
+    @PostAuthorize("""
+    returnObject.body.username == authentication.name
+""")
+    public ResponseEntity<GetUserDto> getUser(@PathVariable String username){
+        return userServices.getUser(username);
+    }
 }

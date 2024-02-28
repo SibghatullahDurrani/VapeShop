@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "pictures")
-public class Picture { // TODO add the relationship to the product domain and add validation to the attributes
+public class Picture {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pictures_generator")
@@ -48,19 +48,13 @@ public class Picture { // TODO add the relationship to the product domain and ad
     @FutureOrPresent
     private LocalDateTime lastModifiedAt;
 
-    @OneToOne
-    @JoinColumn(
-            name = "created_by",
-            updatable = false,
+    @NotBlank
+    @Column(
             nullable = false
     )
-    private User createdBy;
+    private String createdBy;
 
-    @OneToOne
-    @JoinColumn(
-            name = "last_modified_by"
-    )
-    private User lastModifiedBy;
+    private String lastModifiedBy;
 
     @ManyToOne
     @JoinColumn(

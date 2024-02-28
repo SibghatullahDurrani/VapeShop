@@ -31,7 +31,8 @@ public class Order {
     private Long id;
 
     @NotNull
-    private OrderStatus Status ;
+    @Builder.Default
+    private OrderStatus Status = OrderStatus.SHIPPED;
 
     private boolean couponUsed;
 
@@ -54,11 +55,7 @@ public class Order {
     @FutureOrPresent
     private LocalDateTime lastModifiedAt;
 
-    @OneToOne
-    @JoinColumn(
-            name = "last_modified_by"
-    )
-    private User lastModifiedBy;
+    private String lastModifiedBy;
 
     @ManyToOne
     @JoinColumn(

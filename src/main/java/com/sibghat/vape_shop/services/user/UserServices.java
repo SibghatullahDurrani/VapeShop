@@ -2,6 +2,7 @@ package com.sibghat.vape_shop.services.user;
 
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.domains.User;
+import com.sibghat.vape_shop.dtos.user.GetAdminDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.mappers.user.AddUserMapper;
 import com.sibghat.vape_shop.mappers.user.GetUserMapper;
@@ -52,8 +53,8 @@ public class UserServices implements IUserServices {
 
     @Override
     public ResponseEntity<GetUserDto> getUser(String username) {
-        Optional<User> user = userRepository.findUserByUsername(username);
-        return user.map(value -> new ResponseEntity<>(getUserMapper.mapFrom(value), HttpStatus.OK))
+        Optional<GetUserDto> user = userRepository.findUserByUsername(username);
+        return user.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 

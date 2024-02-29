@@ -2,6 +2,7 @@ package com.sibghat.vape_shop.repositories;
 
 import com.sibghat.vape_shop.domains.User;
 import com.sibghat.vape_shop.dtos.user.GetAdminDto;
+import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,7 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     u.username, u.email, u.contactNumber)
     FROM User u WHERE u.username = ?1
 """)
-    Optional<User> findUserByUsername(String username);
+    Optional<GetUserDto> findUserByUsername(String username);
 
     @Query("""
     SELECT new com.sibghat.vape_shop.dtos.user.GetAdminDto(

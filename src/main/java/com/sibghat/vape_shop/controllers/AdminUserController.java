@@ -1,7 +1,7 @@
 package com.sibghat.vape_shop.controllers;
 
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
-import com.sibghat.vape_shop.dtos.user.GetAdminDto;
+import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
 import com.sibghat.vape_shop.services.user.AdminUserServices;
 import com.sibghat.vape_shop.services.user.IAdminUserServices;
 import org.springframework.data.domain.Page;
@@ -10,6 +10,9 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class AdminUserController {
@@ -38,7 +41,7 @@ public class AdminUserController {
     @PostAuthorize("""
     returnObject.body.username == authentication.name
 """)
-    public ResponseEntity<GetAdminDto> getAdmin(@PathVariable String username) {
+    public ResponseEntity<GetUserByAdminDto> getAdmin(@PathVariable String username) {
         return adminUserServices.getAdmin(username);
     }
 
@@ -46,11 +49,12 @@ public class AdminUserController {
     @PreAuthorize("""
     hasRole("ADMIN")
 """)
-    public ResponseEntity<Page<GetAdminDto>> getAllAdmins(
+    public ResponseEntity<Page<GetUserByAdminDto>> getAllAdmins(
             @RequestParam int page,
-            @RequestParam int size
+            @RequestParam int size,
+            @RequestParam Optional<String> username
     ){
-        return adminUserServices.getAllUsers(page, size, ADMIN_ROLE);
+        return adminUserServices.getAllUsers(page, size, ADMIN_ROLE,username);
     }
 
     @GetMapping("/users")
@@ -59,11 +63,13 @@ public class AdminUserController {
     hasRole("ADMIN")
 """
     )
-    public ResponseEntity<Page<GetAdminDto>> getAllUsers(
+    public ResponseEntity<Page<GetUserByAdminDto>> getAllUsers(
             @RequestParam int page,
-            @RequestParam int size
+            @RequestParam int size,
+            @RequestParam Optional<String> username
     ){
-        return adminUserServices.getAllUsers(page,size, USER_ROLE );
+        return adminUserServices.getAllUsers(page,size, USER_ROLE , username);
     }
+
 
 }

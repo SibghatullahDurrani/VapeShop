@@ -1,30 +1,30 @@
 package com.sibghat.vape_shop.mappers.user;
 
 import com.sibghat.vape_shop.domains.User;
-import com.sibghat.vape_shop.dtos.user.GetAdminDto;
+import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
 import com.sibghat.vape_shop.mappers.IMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetAdminMapper implements IMapper<User, GetAdminDto> {
+public class GetAdminMapper implements IMapper<User, GetUserByAdminDto> {
 
     @Override
-    public User mapTo(GetAdminDto getAdminDto) {
+    public User mapTo(GetUserByAdminDto getUserByAdminDto) {
         return User.builder()
-                .username(getAdminDto.getUsername())
-                .email(getAdminDto.getEmail())
-                .contactNumber(getAdminDto.getContactNumber())
-                .enabled(getAdminDto.getEnabled())
-                .createdAt(getAdminDto.getCreatedAt())
-                .lastModifiedAt(getAdminDto.getLastModifiedAt())
-                .createdBy(getAdminDto.getCreatedBy())
-                .lastModifiedBy(getAdminDto.getLastModifiedBy())
+                .username(getUserByAdminDto.getUsername())
+                .email(getUserByAdminDto.getEmail())
+                .contactNumber(getUserByAdminDto.getContactNumber())
+                .enabled(getUserByAdminDto.getEnabled())
+                .createdAt(getUserByAdminDto.getCreatedAt())
+                .lastModifiedAt(getUserByAdminDto.getLastModifiedAt())
+                .createdBy(getUserByAdminDto.getCreatedBy())
+                .lastModifiedBy(getUserByAdminDto.getLastModifiedBy())
                 .build();
     }
 
     @Override
-    public GetAdminDto mapFrom(User user) {
-        return GetAdminDto.builder()
+    public GetUserByAdminDto mapFrom(User user) {
+        return GetUserByAdminDto.builder()
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .contactNumber(user.getContactNumber())

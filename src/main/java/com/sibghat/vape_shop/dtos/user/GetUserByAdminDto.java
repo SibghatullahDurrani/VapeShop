@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @Builder
-public class GetAdminDto {
+public class GetUserByAdminDto {
 
     private String username;
     private String email;

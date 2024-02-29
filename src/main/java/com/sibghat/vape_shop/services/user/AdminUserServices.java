@@ -2,7 +2,7 @@ package com.sibghat.vape_shop.services.user;
 
 import com.sibghat.vape_shop.domains.User;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
-import com.sibghat.vape_shop.dtos.user.GetAdminDto;
+import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
 import com.sibghat.vape_shop.mappers.user.AddUserMapper;
 import com.sibghat.vape_shop.repositories.UserRepository;
 import com.sibghat.vape_shop.services.conditionEvaluators.IUserRelatedConditionEvaluators;
@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -47,8 +48,8 @@ public class AdminUserServices implements IAdminUserServices{
     }
 
     @Override
-    public ResponseEntity<GetAdminDto> getAdmin(String username) {
-        Optional<GetAdminDto> user = userRepository.findAdminByUsername(username);
+    public ResponseEntity<GetUserByAdminDto> getAdmin(String username) {
+        Optional<GetUserByAdminDto> user = userRepository.findAdminByUsername(username);
 
         return user.map(getAdminDto -> new ResponseEntity<>(getAdminDto, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -56,9 +57,20 @@ public class AdminUserServices implements IAdminUserServices{
     }
 
     @Override
-    public ResponseEntity<Page<GetAdminDto>> getAllUsers(int page, int size, String role) {
+    public ResponseEntity<Page<GetUserByAdminDto>> getAllUsers(
+            int page,
+            int size,
+            String role,
+            Optional<String> username
+    ) {
         PageRequest pageRequest = PageRequest.of(page,size);
-        Page<GetAdminDto> adminsPage = userRepository.findAllAdmins(role,pageRequest);
-        return new ResponseEntity<>(adminsPage, HttpStatus.OK);
+        Page<GetUserByAdminDto> usersPage;
+        if(username.isEmpty()){
+            usersPage = userRepository.findAllAdmins(role, pageRequest);
+        }else{
+            usersPage = userRepository.getUsersBySearch(username.get(), role, pageRequest);
+        }
+        return new ResponseEntity<>(usersPage, HttpStatus.OK);
     }
+
 }

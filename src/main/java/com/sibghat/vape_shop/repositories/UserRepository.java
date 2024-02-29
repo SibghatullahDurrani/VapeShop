@@ -1,13 +1,14 @@
 package com.sibghat.vape_shop.repositories;
 
 import com.sibghat.vape_shop.domains.User;
-import com.sibghat.vape_shop.dtos.user.GetAdminDto;
+import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -25,16 +26,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<GetUserDto> findUserByUsername(String username);
 
     @Query("""
-    SELECT new com.sibghat.vape_shop.dtos.user.GetAdminDto(
+    SELECT new com.sibghat.vape_shop.dtos.user.GetUserByAdminDto(
     u.username, u.email, u.contactNumber, u.enabled,
     u.createdAt, u.lastModifiedAt, u.createdBy,u.lastModifiedBy)
     FROM User u WHERE u.username = ?1
 """)
-    Optional<GetAdminDto> findAdminByUsername(String username);
+    Optional<GetUserByAdminDto> findAdminByUsername(String username);
 
     @Query(
             value = """
-    SELECT new com.sibghat.vape_shop.dtos.user.GetAdminDto(
+    SELECT new com.sibghat.vape_shop.dtos.user.GetUserByAdminDto(
     u.username, u.email, u.contactNumber, u.enabled,
     u.createdAt, u.lastModifiedAt, u.createdBy, u.lastModifiedBy)
     FROM User u WHERE u.role = ?1
@@ -42,5 +43,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     countQuery = """
     SELECT count(u) FROM User u WHERE u.role = ?1
 """)
-    Page<GetAdminDto> findAllAdmins(String role,Pageable pageable);
+    Page<GetUserByAdminDto> findAllAdmins(String role, Pageable pageable);
+    @Query(value = """
+    SELECT new com.sibghat.vape_shop.dtos.user.GetUserByAdminDto(
+    u.username, u.email, u.contactNumber, u.enabled,
+    u.createdAt, u.lastModifiedAt, u.createdBy, u.lastModifiedBy)
+    FROM User u WHERE u.username LIKE %?1% AND u.role = ?2
+""",
+    countQuery = """
+    SELECT count(u) FROM User u WHERE u.username LIKE %?1% AND u.role = ?2
+""")
+    Page<GetUserByAdminDto> getUsersBySearch(String username, String role,Pageable pageable);
 }

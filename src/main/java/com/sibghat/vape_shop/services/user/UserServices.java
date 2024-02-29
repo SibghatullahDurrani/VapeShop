@@ -2,7 +2,6 @@ package com.sibghat.vape_shop.services.user;
 
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.domains.User;
-import com.sibghat.vape_shop.dtos.user.GetAdminDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.mappers.user.AddUserMapper;
 import com.sibghat.vape_shop.mappers.user.GetUserMapper;

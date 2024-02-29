@@ -2,6 +2,7 @@ package com.sibghat.vape_shop.controllers;
 
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
+import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
 import com.sibghat.vape_shop.services.user.IUserServices;
 import com.sibghat.vape_shop.services.user.UserServices;
 import jakarta.validation.Valid;
@@ -34,5 +35,20 @@ public class UserController {
 """)
     public ResponseEntity<GetUserDto> getUser(@PathVariable String username){
         return userServices.getUser(username);
+    }
+
+    @PutMapping("/users/{username}")
+    @PreAuthorize("""
+    #username == authentication.name and
+    hasRole("USER")
+""")
+    @PostAuthorize("""
+    returnObject.body.username == authentication.name
+""")
+    public ResponseEntity<GetUserDto> updateUser(
+            @PathVariable String username,
+            @RequestBody UpdateUserDto userToUpdate
+    ){
+        return userServices.updateUser(username, userToUpdate);
     }
 }

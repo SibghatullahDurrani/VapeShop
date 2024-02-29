@@ -19,10 +19,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("""
     SELECT new com.sibghat.vape_shop.dtos.user.GetUserDto(
-    u.username, u.email, u.contactNumber)
+    u.username, u.firstName, u.lastName,
+    u.email, u.contactNumber)
     FROM User u WHERE u.username = ?1
 """)
     Optional<GetUserDto> getUserByUsername(String username);
+
+    Optional<User> findUserByUsername(String username);
 
     @Query("""
     SELECT new com.sibghat.vape_shop.dtos.user.GetUserByAdminDto(
@@ -53,4 +56,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     SELECT count(u) FROM User u WHERE u.username LIKE %?1% AND u.role = ?2
 """)
     Page<GetUserByAdminDto> getUsersBySearch(String username, String role,Pageable pageable);
+
 }

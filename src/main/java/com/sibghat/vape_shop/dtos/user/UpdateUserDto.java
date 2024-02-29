@@ -1,8 +1,6 @@
 package com.sibghat.vape_shop.dtos.user;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,21 +8,13 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Builder
-public class GetUserDto {
-
-    @NotNull
-    private String username;
+public class UpdateUserDto {
 
     @NotBlank
     private String firstName;
-
     @NotBlank
     private String lastName;
-
-    @Email
-    @NotNull
-    private String email;
-
-    @NotNull
+    @NotBlank
     private String contactNumber;
+
 }

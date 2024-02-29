@@ -4,7 +4,6 @@ import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.domains.User;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.mappers.user.AddUserMapper;
-import com.sibghat.vape_shop.mappers.user.GetUserMapper;
 import com.sibghat.vape_shop.repositories.UserRepository;
 import com.sibghat.vape_shop.services.conditionEvaluators.IUserRelatedConditionEvaluators;
 import com.sibghat.vape_shop.services.conditionEvaluators.UserRelatedConditionEvaluators;
@@ -22,20 +21,17 @@ public class UserServices implements IUserServices {
     private final AddUserMapper addUserMapper;
     private final PasswordEncoder passwordEncoder;
     private final IUserRelatedConditionEvaluators userRelatedConditionEvaluators;
-    private final GetUserMapper getUserMapper;
 
     public UserServices(
             UserRepository userRepository,
             AddUserMapper addUserMapper,
             PasswordEncoder passwordEncoder,
-            UserRelatedConditionEvaluators userRelatedConditionEvaluators,
-            GetUserMapper getUserMapper
+            UserRelatedConditionEvaluators userRelatedConditionEvaluators
     ) {
         this.userRepository = userRepository;
         this.addUserMapper = addUserMapper;
         this.passwordEncoder = passwordEncoder;
         this.userRelatedConditionEvaluators = userRelatedConditionEvaluators;
-        this.getUserMapper = getUserMapper;
     }
 
     @Override

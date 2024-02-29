@@ -11,6 +11,8 @@ public class AddUserMapper implements IMapper<User, AddUserDto> {
     public User mapTo(AddUserDto addUserDto) {
         return User.builder()
                 .username(addUserDto.getUsername())
+                .firstName(addUserDto.getFirstName())
+                .lastName(addUserDto.getLastName())
                 .email(addUserDto.getEmail())
                 .password(addUserDto.getPassword())
                 .contactNumber(addUserDto.getContactNumber())
@@ -22,6 +24,8 @@ public class AddUserMapper implements IMapper<User, AddUserDto> {
     public AddUserDto mapFrom(User user) {
         return AddUserDto.builder()
                 .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .contactNumber(user.getContactNumber())

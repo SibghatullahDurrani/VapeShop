@@ -26,8 +26,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("""
     SELECT new com.sibghat.vape_shop.dtos.user.GetUserByAdminDto(
-    u.username, u.email, u.contactNumber, u.enabled,
-    u.createdAt, u.lastModifiedAt, u.createdBy,u.lastModifiedBy)
+    u.username, u.firstName, u.lastName, u.email, u.contactNumber,
+    u.enabled, u.createdAt, u.lastModifiedAt, u.createdBy,u.lastModifiedBy)
     FROM User u WHERE u.username = ?1
 """)
     Optional<GetUserByAdminDto> getAdminByUsername(String username);
@@ -35,8 +35,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(
             value = """
     SELECT new com.sibghat.vape_shop.dtos.user.GetUserByAdminDto(
-    u.username, u.email, u.contactNumber, u.enabled,
-    u.createdAt, u.lastModifiedAt, u.createdBy, u.lastModifiedBy)
+    u.username, u.firstName, u.lastName, u.email, u.contactNumber,
+    u.enabled, u.createdAt, u.lastModifiedAt, u.createdBy,u.lastModifiedBy)
     FROM User u WHERE u.role = ?1
 """,
     countQuery = """
@@ -45,8 +45,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<GetUserByAdminDto> getAllUsers(String role, Pageable pageable);
     @Query(value = """
     SELECT new com.sibghat.vape_shop.dtos.user.GetUserByAdminDto(
-    u.username, u.email, u.contactNumber, u.enabled,
-    u.createdAt, u.lastModifiedAt, u.createdBy, u.lastModifiedBy)
+    u.username, u.firstName, u.lastName, u.email, u.contactNumber,
+    u.enabled, u.createdAt, u.lastModifiedAt, u.createdBy,u.lastModifiedBy)
     FROM User u WHERE u.username LIKE %?1% AND u.role = ?2
 """,
     countQuery = """

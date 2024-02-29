@@ -30,6 +30,18 @@ public class User {
     )
     private Long id;
 
+    @NotBlank
+    @Column(
+            nullable = false
+    )
+    private String firstName;
+
+    @NotBlank
+    @Column(
+            nullable = false
+    )
+    private String lastName;
+
     @NotBlank(message = "username must not be empty")
     @Column(
             unique = true,

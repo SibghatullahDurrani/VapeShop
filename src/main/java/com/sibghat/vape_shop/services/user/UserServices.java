@@ -52,7 +52,7 @@ public class UserServices implements IUserServices {
 
     @Override
     public ResponseEntity<GetUserDto> getUser(String username) {
-        Optional<GetUserDto> user = userRepository.findUserByUsername(username);
+        Optional<GetUserDto> user = userRepository.getUserByUsername(username);
         return user.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }

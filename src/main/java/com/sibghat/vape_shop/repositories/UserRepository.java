@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -23,7 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     u.username, u.email, u.contactNumber)
     FROM User u WHERE u.username = ?1
 """)
-    Optional<GetUserDto> findUserByUsername(String username);
+    Optional<GetUserDto> getUserByUsername(String username);
 
     @Query("""
     SELECT new com.sibghat.vape_shop.dtos.user.GetUserByAdminDto(
@@ -31,7 +30,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     u.createdAt, u.lastModifiedAt, u.createdBy,u.lastModifiedBy)
     FROM User u WHERE u.username = ?1
 """)
-    Optional<GetUserByAdminDto> findAdminByUsername(String username);
+    Optional<GetUserByAdminDto> getAdminByUsername(String username);
 
     @Query(
             value = """
@@ -43,7 +42,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     countQuery = """
     SELECT count(u) FROM User u WHERE u.role = ?1
 """)
-    Page<GetUserByAdminDto> findAllAdmins(String role, Pageable pageable);
+    Page<GetUserByAdminDto> getAllUsers(String role, Pageable pageable);
     @Query(value = """
     SELECT new com.sibghat.vape_shop.dtos.user.GetUserByAdminDto(
     u.username, u.email, u.contactNumber, u.enabled,

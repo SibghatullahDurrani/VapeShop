@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -49,7 +48,7 @@ public class AdminUserServices implements IAdminUserServices{
 
     @Override
     public ResponseEntity<GetUserByAdminDto> getAdmin(String username) {
-        Optional<GetUserByAdminDto> user = userRepository.findAdminByUsername(username);
+        Optional<GetUserByAdminDto> user = userRepository.getAdminByUsername(username);
 
         return user.map(getAdminDto -> new ResponseEntity<>(getAdminDto, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -66,7 +65,7 @@ public class AdminUserServices implements IAdminUserServices{
         PageRequest pageRequest = PageRequest.of(page,size);
         Page<GetUserByAdminDto> usersPage;
         if(username.isEmpty()){
-            usersPage = userRepository.findAllAdmins(role, pageRequest);
+            usersPage = userRepository.getAllUsers(role, pageRequest);
         }else{
             usersPage = userRepository.getUsersBySearch(username.get(), role, pageRequest);
         }

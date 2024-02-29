@@ -82,6 +82,8 @@ public class User {
     )
     private String createdBy;
 
+    private String lastModifiedBy;
+
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL

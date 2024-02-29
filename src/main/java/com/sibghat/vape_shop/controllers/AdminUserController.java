@@ -1,9 +1,10 @@
 package com.sibghat.vape_shop.controllers;
 
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
-import com.sibghat.vape_shop.dtos.user.GetUserDto;
+import com.sibghat.vape_shop.dtos.user.GetAdminDto;
 import com.sibghat.vape_shop.services.user.AdminUserServices;
 import com.sibghat.vape_shop.services.user.IAdminUserServices;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,8 +36,16 @@ public class AdminUserController {
     @PostAuthorize("""
     returnObject.body.username == authentication.name
 """)
-    public ResponseEntity<GetUserDto> getAdmin(@PathVariable String username) {
+    public ResponseEntity<GetAdminDto> getAdmin(@PathVariable String username) {
         return adminUserServices.getAdmin(username);
+    }
+
+    @GetMapping("/users/admins")
+    @PreAuthorize("""
+    hasRole("ADMIN")
+""")
+    public ResponseEntity<Page<GetAdminDto>> getAllAdmins(@RequestParam int page, @RequestParam int size){
+        return adminUserServices.getAdmins(page, size);
     }
 
 }

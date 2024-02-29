@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 public class AdminUserController {
 
     private final IAdminUserServices adminUserServices;
+    private final String USER_ROLE = "ROLE_USER";
+    private final String ADMIN_ROLE = "ROLE_ADMIN";
 
     public AdminUserController(AdminUserServices adminUserServices) {
         this.adminUserServices = adminUserServices;
@@ -44,11 +46,24 @@ public class AdminUserController {
     @PreAuthorize("""
     hasRole("ADMIN")
 """)
-    public ResponseEntity<Page<GetAdminDto>> getAllAdmins(@RequestParam int page, @RequestParam int size){
-        return adminUserServices.getAdmins(page, size);
+    public ResponseEntity<Page<GetAdminDto>> getAllAdmins(
+            @RequestParam int page,
+            @RequestParam int size
+    ){
+        return adminUserServices.getAllUsers(page, size, ADMIN_ROLE);
     }
 
-//    @GetMapping("/users")
-//    public ResponseEntity<Page<GetAdminDto>>
+    @GetMapping("/users")
+    @PreAuthorize(
+            """
+    hasRole("ADMIN")
+"""
+    )
+    public ResponseEntity<Page<GetAdminDto>> getAllUsers(
+            @RequestParam int page,
+            @RequestParam int size
+    ){
+        return adminUserServices.getAllUsers(page,size, USER_ROLE );
+    }
 
 }

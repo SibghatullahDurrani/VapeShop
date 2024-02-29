@@ -56,9 +56,9 @@ public class AdminUserServices implements IAdminUserServices{
     }
 
     @Override
-    public ResponseEntity<Page<GetAdminDto>> getAdmins(int page, int size) {
+    public ResponseEntity<Page<GetAdminDto>> getAllUsers(int page, int size, String role) {
         PageRequest pageRequest = PageRequest.of(page,size);
-        Page<GetAdminDto> adminsPage = userRepository.findAllAdmins(pageRequest);
+        Page<GetAdminDto> adminsPage = userRepository.findAllAdmins(role,pageRequest);
         return new ResponseEntity<>(adminsPage, HttpStatus.OK);
     }
 }

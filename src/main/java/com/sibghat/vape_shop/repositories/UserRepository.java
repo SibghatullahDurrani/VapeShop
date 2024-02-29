@@ -37,10 +37,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     SELECT new com.sibghat.vape_shop.dtos.user.GetAdminDto(
     u.username, u.email, u.contactNumber, u.enabled,
     u.createdAt, u.lastModifiedAt, u.createdBy, u.lastModifiedBy)
-    FROM User u WHERE u.role = "ROLE_ADMIN"
+    FROM User u WHERE u.role = ?1
 """,
     countQuery = """
-    SELECT count(u) FROM User u WHERE u.role = "ROLE_ADMIN"
+    SELECT count(u) FROM User u WHERE u.role = ?1
 """)
-    Page<GetAdminDto> findAllAdmins(Pageable pageable);
+    Page<GetAdminDto> findAllAdmins(String role,Pageable pageable);
 }

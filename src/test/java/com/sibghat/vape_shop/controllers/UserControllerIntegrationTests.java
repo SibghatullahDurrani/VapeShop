@@ -3,6 +3,7 @@ package com.sibghat.vape_shop.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sibghat.vape_shop.TestDataUtil;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
+import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.services.user.IUserServices;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -53,6 +55,14 @@ public class UserControllerIntegrationTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson)
         ).andExpect(MockMvcResultMatchers.status().isCreated());
+    }
+
+    @Test
+    void testThatVerifyAccountReturnsHTTP200OkWithCorrectFlow() throws Exception {
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        ResponseEntity<GetUserDto> user = userServices.addUser(userToAdd);
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/verify/"+user.getBody().getVerificationCode())
+        ).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
 //    @Test

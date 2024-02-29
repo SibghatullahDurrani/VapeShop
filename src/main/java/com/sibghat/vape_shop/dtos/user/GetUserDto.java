@@ -27,4 +27,6 @@ public class GetUserDto {
 
     @NotNull
     private String contactNumber;
+
+    private String verificationCode;
 }

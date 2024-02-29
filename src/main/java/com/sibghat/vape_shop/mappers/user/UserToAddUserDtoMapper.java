@@ -16,7 +16,6 @@ public class UserToAddUserDtoMapper implements IMapper<User, AddUserDto> {
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .contactNumber(user.getContactNumber())
-                .enabled(user.isEnabled())
                 .build();
     }
 }

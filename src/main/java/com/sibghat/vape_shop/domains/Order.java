@@ -67,9 +67,4 @@ public class Order {
     )
     private List<OrderProduct> orderProducts;
 
-    private enum OrderStatus{
-        SHIPPED,
-        RETURNED,
-        COMPLETED
-    }
 }

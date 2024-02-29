@@ -15,6 +15,7 @@ public class UserToGetUserDtoMapper implements IMapper<User, GetUserDto> {
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .contactNumber(user.getContactNumber())
+                .verificationCode(user.getVerificationCode())
                 .build();
     }
 }

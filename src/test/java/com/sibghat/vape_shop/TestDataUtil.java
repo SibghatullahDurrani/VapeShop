@@ -12,7 +12,6 @@ public class TestDataUtil {
                 .password("aqrar")
                 .contactNumber("123094123")
                 .email("aqrar123@gmail.com")
-                .enabled(true)
                 .build();
     }
 

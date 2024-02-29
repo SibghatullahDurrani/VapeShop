@@ -75,11 +75,12 @@ public class User {
     @Column(
             unique = true
     )
-    private Integer verificationCode;
+    private String verificationCode;
 
-    private Integer verificationCodeValidTill;
+    private Long verificationCodeValidTill;
 
-    private boolean enabled;
+    @Builder.Default
+    private boolean enabled=false;
 
     @NotNull
     @Builder.Default

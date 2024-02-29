@@ -1,0 +1,15 @@
+{
+  "sub": "aqrar",
+  "aud": "client",
+  "nbf": 1709222755,
+  "scope": [
+    "openid"
+  ],
+  "roles": [
+    "ROLE_USER"
+  ],
+  "iss": "http://localhost:8080",
+  "exp": 2709309155,
+  "iat": 1709222755,
+  "jti": "7f7a4379-2131-46fb-a5ed-7b333ff04d16"
+}

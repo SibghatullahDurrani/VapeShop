@@ -31,8 +31,7 @@ public class Order {
     private Long id;
 
     @NotNull
-    @Builder.Default
-    private OrderStatus Status = OrderStatus.SHIPPED;
+    private String Status;
 
     private boolean couponUsed;
 

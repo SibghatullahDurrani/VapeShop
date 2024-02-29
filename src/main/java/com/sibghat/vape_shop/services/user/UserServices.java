@@ -47,7 +47,7 @@ public class UserServices implements IUserServices {
         user.setPassword(hashedPassword);
         user.setCreatedBy(addUserDto.getUsername());
 
-        return new ResponseEntity<>(userToGetUserDtoMapper.mapFrom(userRepository.save(user)), HttpStatus.OK);
+        return new ResponseEntity<>(userToGetUserDtoMapper.mapFrom(userRepository.save(user)), HttpStatus.CREATED);
 
     }
 

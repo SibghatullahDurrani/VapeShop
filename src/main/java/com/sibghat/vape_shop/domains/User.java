@@ -77,6 +77,8 @@ public class User {
     )
     private Integer verificationCode;
 
+    private Integer verificationCodeValidTill;
+
     private boolean enabled;
 
     @NotNull

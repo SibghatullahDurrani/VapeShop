@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface IUserServices {
 
-    ResponseEntity<AddUserDto> addUser(AddUserDto addUserDto);
+    ResponseEntity<GetUserDto> addUser(AddUserDto addUserDto);
 
     ResponseEntity<GetUserDto> getUser(String username);
 

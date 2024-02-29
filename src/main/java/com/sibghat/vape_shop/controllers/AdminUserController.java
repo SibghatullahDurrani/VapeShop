@@ -2,6 +2,7 @@ package com.sibghat.vape_shop.controllers;
 
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
+import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.services.user.AdminUserServices;
 import com.sibghat.vape_shop.services.user.IAdminUserServices;
 import org.springframework.data.domain.Page;
@@ -29,7 +30,7 @@ public class AdminUserController {
     @PreAuthorize("""
         hasRole("ADMIN")
     """)
-    public AddUserDto addAdmin(@RequestBody AddUserDto adminToAdd, Authentication authentication){
+    public ResponseEntity<GetUserDto> addAdmin(@RequestBody AddUserDto adminToAdd, Authentication authentication){
         return adminUserServices.addAdmin(adminToAdd,authentication.getName());
     }
 

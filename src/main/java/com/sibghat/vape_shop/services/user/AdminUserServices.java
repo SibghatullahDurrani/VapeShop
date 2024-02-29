@@ -3,8 +3,10 @@ package com.sibghat.vape_shop.services.user;
 import com.sibghat.vape_shop.domains.User;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
+import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.mappers.user.AddUserDtoToUserMapper;
 import com.sibghat.vape_shop.mappers.user.UserToAddUserDtoMapper;
+import com.sibghat.vape_shop.mappers.user.UserToGetUserDtoMapper;
 import com.sibghat.vape_shop.repositories.UserRepository;
 import com.sibghat.vape_shop.services.conditionEvaluators.IUserRelatedConditionEvaluators;
 import com.sibghat.vape_shop.services.conditionEvaluators.UserRelatedConditionEvaluators;
@@ -21,33 +23,37 @@ import java.util.Optional;
 public class AdminUserServices implements IAdminUserServices{
 
     private final UserRepository userRepository;
-    private final UserToAddUserDtoMapper userToAddUserDtoMapper;
     private final AddUserDtoToUserMapper addUserDtoToUserMapper;
+    private final UserToGetUserDtoMapper userToGetUserDtoMapper;
     private final PasswordEncoder passwordEncoder;
     private final IUserRelatedConditionEvaluators userRelatedConditionEvaluators;
 
     public AdminUserServices(
             UserRepository userRepository,
-            UserToAddUserDtoMapper userToAddUserDtoMapper,
             AddUserDtoToUserMapper addUserDtoToUserMapper,
+            UserToGetUserDtoMapper userToGetUserDtoMapper,
             PasswordEncoder passwordEncoder,
             UserRelatedConditionEvaluators userRelatedConditionEvaluators) {
         this.userRepository = userRepository;
-        this.userToAddUserDtoMapper = userToAddUserDtoMapper;
         this.addUserDtoToUserMapper = addUserDtoToUserMapper;
+        this.userToGetUserDtoMapper = userToGetUserDtoMapper;
         this.passwordEncoder = passwordEncoder;
         this.userRelatedConditionEvaluators = userRelatedConditionEvaluators;
     }
 
     @Override
-    public AddUserDto addAdmin(AddUserDto adminToAdd, String CreatedBy) {
+    public ResponseEntity<GetUserDto> addAdmin(AddUserDto adminToAdd, String CreatedBy) {
         userRelatedConditionEvaluators.checkThatUserDoesNotAlreadyExistsBeforeAddingANewUser(adminToAdd);
         User user = addUserDtoToUserMapper.mapFrom(adminToAdd);
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
         user.setCreatedBy(CreatedBy);
         user.setRole("ROLE_ADMIN");
-        return userToAddUserDtoMapper.mapFrom(userRepository.save(user));
+        return new ResponseEntity<>(
+                userToGetUserDtoMapper.mapFrom(userRepository.save(user)),
+                HttpStatus.OK
+        );
+
     }
 
     @Override

@@ -1,11 +1,10 @@
 package com.sibghat.vape_shop.services.user;
 
-import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.domains.User;
+import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
 import com.sibghat.vape_shop.mappers.user.AddUserDtoToUserMapper;
-import com.sibghat.vape_shop.mappers.user.UserToAddUserDtoMapper;
 import com.sibghat.vape_shop.mappers.user.UserToGetUserDtoMapper;
 import com.sibghat.vape_shop.repositories.UserRepository;
 import com.sibghat.vape_shop.services.conditionEvaluators.IUserRelatedConditionEvaluators;
@@ -21,7 +20,6 @@ import java.util.Optional;
 public class UserServices implements IUserServices {
 
     private final UserRepository userRepository;
-    private final UserToAddUserDtoMapper userToAddUserDtoMapper;
     private final AddUserDtoToUserMapper addUserDtoToUserMapper;
     private final UserToGetUserDtoMapper userToGetUserDtoMapper;
     private final PasswordEncoder passwordEncoder;
@@ -29,14 +27,12 @@ public class UserServices implements IUserServices {
 
     public UserServices(
             UserRepository userRepository,
-            UserToAddUserDtoMapper userToAddUserDtoMapper,
             AddUserDtoToUserMapper addUserDtoToUserMapper,
             UserToGetUserDtoMapper userToGetUserDtoMapper,
             PasswordEncoder passwordEncoder,
             UserRelatedConditionEvaluators userRelatedConditionEvaluators
     ) {
         this.userRepository = userRepository;
-        this.userToAddUserDtoMapper = userToAddUserDtoMapper;
         this.addUserDtoToUserMapper = addUserDtoToUserMapper;
         this.userToGetUserDtoMapper = userToGetUserDtoMapper;
         this.passwordEncoder = passwordEncoder;
@@ -44,14 +40,14 @@ public class UserServices implements IUserServices {
     }
 
     @Override
-    public ResponseEntity<AddUserDto> addUser(AddUserDto addUserDto) {
+    public ResponseEntity<GetUserDto> addUser(AddUserDto addUserDto) {
         userRelatedConditionEvaluators.checkThatUserDoesNotAlreadyExistsBeforeAddingANewUser(addUserDto);
         User user = addUserDtoToUserMapper.mapFrom(addUserDto);
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
         user.setCreatedBy(addUserDto.getUsername());
 
-        return new ResponseEntity<>(userToAddUserDtoMapper.mapFrom(userRepository.save(user)), HttpStatus.OK);
+        return new ResponseEntity<>(userToGetUserDtoMapper.mapFrom(userRepository.save(user)), HttpStatus.OK);
 
     }
 

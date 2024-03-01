@@ -32,7 +32,7 @@ public class ControllerExceptionHandler {
         String error = exp.getMessage();
         var errors = new HashMap<String,String>();
         for(String i : error.split("\\s+")){
-            errors.put(i,"Already Exists");
+            errors.put(i,"already exists");
         }
         return new ResponseEntity<>(errors, HttpStatus.CONFLICT);
     }

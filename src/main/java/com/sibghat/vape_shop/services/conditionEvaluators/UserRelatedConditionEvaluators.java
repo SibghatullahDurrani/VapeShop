@@ -19,15 +19,15 @@ public class UserRelatedConditionEvaluators implements IUserRelatedConditionEval
         StringBuilder stringBuilder = new StringBuilder();
         boolean check = true;
         if (userRepository.existsByContactNumber(userToAdd.getContactNumber())){
-            stringBuilder.append("Contact_Number ");
+            stringBuilder.append("contactNumber ");
             check = false;
         }
         if(userRepository.existsByEmail(userToAdd.getEmail())){
-            stringBuilder.append("Email ");
+            stringBuilder.append("email ");
             check = false;
         }
         if(userRepository.existsByUsername(userToAdd.getUsername())){
-            stringBuilder.append("Username ");
+            stringBuilder.append("username ");
             check = false;
         }
         if(!check){

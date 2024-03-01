@@ -21,9 +21,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Objects;
 
-
-
-
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -154,7 +151,19 @@ public class UserControllerIntegrationTests {
         ).andExpect(jsonPath("$.contactNumber").value("must not be blank"));
     }
 
-
+    @Test
+    void testThatAddUserReturnsHTTP409ConflictWhenAddingUserWithUsernameThatAlreadyExists() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        userServices.addUser(userToAdd);
+        userToAdd.setEmail("1234@gmail.com");
+        userToAdd.setContactNumber("123412341234");
+        String userJson = objectMapper.writeValueAsString(userToAdd);
+        mockMvc.perform(post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson)
+        ).andExpect(status().isConflict()
+        ).andExpect(jsonPath("$.username").value("already exists"));
+    }
 
     @Test
     void testThatVerifyAccountReturnsHTTP200OkWithCorrectFlow() throws Exception {

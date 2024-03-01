@@ -194,6 +194,20 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
+    void testThatAddUserReturnsHTTP409ConflictWhenAddingUserWithEveryUniqueFieldThatAlreadyExists() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        userServices.addUser(userToAdd);
+        String userJson = objectMapper.writeValueAsString(userToAdd);
+        mockMvc.perform(post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson)
+        ).andExpect(status().isConflict()
+        ).andExpect(jsonPath("$.username").value("already exists")
+        ).andExpect(jsonPath("$.email").value("already exists")
+        ).andExpect(jsonPath("$.contactNumber").value("already exists"));
+    }
+
+    @Test
     void testThatVerifyAccountReturnsHTTP200OkWithCorrectFlow() throws Exception {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         ResponseEntity<GetUserDto> user = userServices.addUser(userToAdd);

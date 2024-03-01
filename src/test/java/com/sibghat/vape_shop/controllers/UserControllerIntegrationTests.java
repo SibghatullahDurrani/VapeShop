@@ -5,6 +5,7 @@ import com.sibghat.vape_shop.TestDataUtil;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.services.user.IUserServices;
+import org.hibernate.boot.jaxb.hbm.spi.JaxbHbmCompositeKeyBasicAttributeType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,19 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
+    void testThatAddUserReturnsHTTP400BadRequestWithNoUsername() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        userToAdd.setUsername(null);
+        String userJson = objectMapper.writeValueAsString(userToAdd);
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson)
+        ).andExpect(MockMvcResultMatchers.status().isBadRequest()
+        ).andExpect(MockMvcResultMatchers.jsonPath("$.username").value("must not be blank"));
+    }
+
+
+    @Test
     void testThatVerifyAccountReturnsHTTP200OkWithCorrectFlow() throws Exception {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         ResponseEntity<GetUserDto> user = userServices.addUser(userToAdd);
@@ -65,10 +79,7 @@ public class UserControllerIntegrationTests {
         ).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-//    @Test
-//    void testThatAddUserReturnsHTTP400BadRequestWithNoUsername(){
-//        String userJson = "{\"username\":\"aqrar\",\"firstName\":\"aqrar\",\"lastName\":\"Bazai\",\"email\":\"aqrar123@gmail.com\",\"password\":\"aqrar\",\"contactNumber\":\"123094123\",\"enabled\":true}";
-//    }
+
 
     @Test
     @WithMockUser(username = "aqrar",roles = "USER")

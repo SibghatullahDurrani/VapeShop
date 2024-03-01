@@ -78,6 +78,18 @@ public class UserControllerIntegrationTests {
         ).andExpect(jsonPath("$.firstName").value("must not be blank"));
     }
 
+    @Test
+    void testThatAddUserReturnsHTTP400BadRequestAndCorrectResponseBodyWithNoLastName() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        userToAdd.setLastName(null);
+        String userJson = objectMapper.writeValueAsString(userToAdd);
+        mockMvc.perform(post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson)
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.lastName").value("must not be blank"));
+    }
+
 
     @Test
     void testThatVerifyAccountReturnsHTTP200OkWithCorrectFlow() throws Exception {

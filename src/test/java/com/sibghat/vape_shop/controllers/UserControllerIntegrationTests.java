@@ -42,7 +42,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    void testThatAddUserReturnsHTTP201CreatedWithCorrectRequestBody() throws Exception {
+    void addUser_ReturnsHTTP201Created_WithCorrectRequestBody() throws Exception {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         String userJson = objectMapper.writeValueAsString(userToAdd);
         mockMvc.perform(post("/users")
@@ -52,7 +52,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    void testThatAddUserReturnsHTTP400BadRequestAndCorrectResponseBodyWithNoUsername() throws Exception{
+    void addUser_ReturnsHTTP400BadRequestAndCorrectResponseBody_WithNoUsername() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         userToAdd.setUsername(null);
         String userJson = objectMapper.writeValueAsString(userToAdd);
@@ -64,7 +64,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    void testThatAddUserReturnsHTTP400BadRequestAndCorrectResponseBodyWithNoFirstName() throws Exception{
+    void addUser_ReturnsHTTP400BadRequestAndCorrectResponseBody_WithNoFirstName() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         userToAdd.setFirstName(null);
         String userJson = objectMapper.writeValueAsString(userToAdd);
@@ -76,7 +76,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    void testThatAddUserReturnsHTTP400BadRequestAndCorrectResponseBodyWithNoLastName() throws Exception{
+    void addUser_ReturnsHTTP400BadRequestAndCorrectResponseBody_WithNoLastName() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         userToAdd.setLastName(null);
         String userJson = objectMapper.writeValueAsString(userToAdd);
@@ -88,7 +88,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    void testThatAddUserReturnsHTTP400BadRequestAndCorrectResponseBodyWithNoEmail() throws Exception{
+    void addUser_ReturnsHTTP400BadRequestAndCorrectResponseBody_WithNoEmail() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         userToAdd.setEmail(null);
         String userJson = objectMapper.writeValueAsString(userToAdd);
@@ -100,7 +100,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    void testThatAddUserReturnsHTTP400BadRequestAndCorrectResponseBodyWithIncorrectEmail() throws Exception{
+    void addUser_ReturnsHTTP400BadRequestAndCorrectResponseBody_WithIncorrectEmail() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         userToAdd.setEmail("abc");
         String userJson = objectMapper.writeValueAsString(userToAdd);
@@ -112,7 +112,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    void testThatAddUserReturnsHTTP400BadRequestAndCorrectResponseBodyWithNoPassword() throws Exception{
+    void addUser_ReturnsHTTP400BadRequestAndCorrectResponseBody_WithNoPassword() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         userToAdd.setPassword(null);
         String userJson = objectMapper.writeValueAsString(userToAdd);
@@ -124,7 +124,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    void testThatAddUserReturnsHTTP400BadRequestAndCorrectResponseBodyWithNoContactNumber() throws Exception{
+    void addUser_ReturnsHTTP400BadRequestAndCorrectResponseBody_WithNoContactNumber() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         userToAdd.setContactNumber(null);
         String userJson = objectMapper.writeValueAsString(userToAdd);
@@ -136,7 +136,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    void testThatAddUserReturnsHTTP400BadRequestAndCorrectResponseBodyWithNoRequestBody() throws Exception{
+    void addUser_ReturnsHTTP400BadRequestAndCorrectResponseBody_WithNoRequestBody() throws Exception{
         AddUserDto userToAdd = AddUserDto.builder().build();
         String userJson = objectMapper.writeValueAsString(userToAdd);
         mockMvc.perform(post("/users")
@@ -152,7 +152,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    void testThatAddUserReturnsHTTP409ConflictWhenAddingUserWithUsernameThatAlreadyExists() throws Exception{
+    void addUser_ReturnsHTTP409Conflict_WithUsernameThatAlreadyExists() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         userServices.addUser(userToAdd);
         userToAdd.setEmail("1234@gmail.com");
@@ -166,7 +166,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    void testThatAddUserReturnsHTTP409ConflictWhenAddingUserWithEmailThatAlreadyExists() throws Exception{
+    void addUser_ReturnsHTTP409Conflict_WithEmailThatAlreadyExists() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         userServices.addUser(userToAdd);
         userToAdd.setUsername("abc");
@@ -180,7 +180,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    void testThatAddUserReturnsHTTP409ConflictWhenAddingUserWithContactNumberThatAlreadyExists() throws Exception{
+    void adUser_ReturnsHTTP409Conflict_WithContactNumberThatAlreadyExists() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         userServices.addUser(userToAdd);
         userToAdd.setUsername("abc");
@@ -194,7 +194,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    void testThatAddUserReturnsHTTP409ConflictWhenAddingUserWithEveryUniqueFieldThatAlreadyExists() throws Exception{
+    void addUserReturnsHTTP409Conflict_WithEveryUniqueFieldThatAlreadyExists() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         userServices.addUser(userToAdd);
         String userJson = objectMapper.writeValueAsString(userToAdd);
@@ -208,7 +208,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    void testThatVerifyAccountReturnsHTTP200OkWithCorrectFlow() throws Exception {
+    void verifyUser_ReturnsHTTP200Ok_WithCorrectVerificationCode() throws Exception {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         ResponseEntity<GetUserDto> user = userServices.addUser(userToAdd);
         mockMvc.perform(patch("/users/verify/"+ Objects.requireNonNull(user.getBody()).getVerificationCode())
@@ -217,7 +217,7 @@ public class UserControllerIntegrationTests {
 
     @Test
     @WithMockUser(username = "aqrar",roles = "USER")
-    void testThatGetUserReturnsHTTP200OkWithCorrectUserCredentials() throws Exception {
+    void getUser_ReturnsHTTP200Ok_WithCorrectUserCredentials() throws Exception {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         userServices.addUser(userToAdd);
         mockMvc.perform(get("/users/aqrar"))
@@ -226,7 +226,7 @@ public class UserControllerIntegrationTests {
 
     @Test
     @WithMockUser(username = "aqrar",roles = "ADMIN")
-    void testThatGetUserReturnsHTTP403ForbiddenWithIncorrectRole() throws Exception {
+    void getUser_ReturnsHTTP403Forbidden_WithIncorrectRole() throws Exception {
         mockMvc.perform(get("/users/aqrar"))
                 .andExpect(status().isForbidden());
     }

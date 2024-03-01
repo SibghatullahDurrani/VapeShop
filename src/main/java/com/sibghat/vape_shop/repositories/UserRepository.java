@@ -36,7 +36,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<VerifyUserDto> getUserByVerificationCode(String verification_code);
 
     @Query("""
-    UPDATE User u set u.enabled = true WHERE u.username = ?1
+    UPDATE User u set u.enabled = true, u.verificationCode = null,
+    u.verificationCodeValidTill = null
+    WHERE u.username = ?1
 """)
     @Modifying
     @Transactional

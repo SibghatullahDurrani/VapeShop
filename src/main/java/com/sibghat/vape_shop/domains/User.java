@@ -60,16 +60,24 @@ public class User {
     private String email;
 
     @NotBlank(message = "password must not be empty")
+    @Column(
+            nullable = false
+    )
     private String password;
 
     @NotBlank(message = "contact number must not be empty")
     @Column(
-            unique = true
+            unique = true,
+            nullable = false,
+            updatable = false
     )
     private String contactNumber;
 
     @NotBlank
     @Builder.Default
+    @Column(
+            nullable = false
+    )
     private String role="ROLE_USER";
 
     @Column(
@@ -80,6 +88,9 @@ public class User {
     private Long verificationCodeValidTill;
 
     @Builder.Default
+    @Column(
+            nullable = false
+    )
     private boolean enabled=false;
 
     @NotNull
@@ -93,7 +104,8 @@ public class User {
     private LocalDateTime lastModifiedAt;
 
     @Column(
-            nullable = false
+            nullable = false,
+            updatable = false
     )
     private String createdBy;
 

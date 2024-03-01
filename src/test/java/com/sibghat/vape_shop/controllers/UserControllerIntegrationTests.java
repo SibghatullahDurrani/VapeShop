@@ -139,6 +139,24 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
+    void testThatAddUserReturnsHTTP400BadRequestAndCorrectResponseBodyWithNoRequestBody() throws Exception{
+        AddUserDto userToAdd = AddUserDto.builder().build();
+        String userJson = objectMapper.writeValueAsString(userToAdd);
+        mockMvc.perform(post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson)
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.username").value("must not be blank")
+        ).andExpect(jsonPath("$.firstName").value("must not be blank")
+        ).andExpect(jsonPath("$.lastName").value("must not be blank")
+        ).andExpect(jsonPath("$.email").value("must not be blank")
+        ).andExpect(jsonPath("$.password").value("must not be blank")
+        ).andExpect(jsonPath("$.contactNumber").value("must not be blank"));
+    }
+
+
+
+    @Test
     void testThatVerifyAccountReturnsHTTP200OkWithCorrectFlow() throws Exception {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         ResponseEntity<GetUserDto> user = userServices.addUser(userToAdd);

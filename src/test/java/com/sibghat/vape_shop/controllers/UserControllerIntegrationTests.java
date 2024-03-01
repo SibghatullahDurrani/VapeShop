@@ -5,7 +5,6 @@ import com.sibghat.vape_shop.TestDataUtil;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.services.user.IUserServices;
-import org.hibernate.boot.jaxb.hbm.spi.JaxbHbmCompositeKeyBasicAttributeType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +16,12 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.Objects;
+
+
 
 
 @SpringBootTest
@@ -33,13 +36,6 @@ public class UserControllerIntegrationTests {
 
 
     TestDataUtil testDataUtil = new TestDataUtil();
-    private final String userWithNoUsername = "{\"firstName\":\"aqrar\",\"lastName\":\"Bazai\",\"email\":\"aqrar123@gmail.com\",\"password\":\"aqrar\",\"contactNumber\":\"123094123\",\"enabled\":true}";
-    private final String userWithNoFirstName = "{\"username\":\"aqrar\",\"lastName\":\"Bazai\",\"email\":\"aqrar123@gmail.com\",\"password\":\"aqrar\",\"contactNumber\":\"123094123\",\"enabled\":true}";
-    private final String userWithNoLastName = "{\"username\":\"aqrar\",\"firstName\":\"aqrar\",\"email\":\"aqrar123@gmail.com\",\"password\":\"aqrar\",\"contactNumber\":\"123094123\",\"enabled\":true}";
-    private final String userWithNoEmail = "{\"username\":\"aqrar\",\"firstName\":\"aqrar\",\"lastName\":\"Bazai\",\"password\":\"aqrar\",\"contactNumber\":\"123094123\",\"enabled\":true}";
-    private final String userWithNoContactNumber = "{\"username\":\"aqrar\",\"firstName\":\"aqrar\",\"lastName\":\"Bazai\",\"email\":\"aqrar123@gmail.com\",\"password\":\"aqrar\",\"enabled\":true}";
-
-
 
     @Autowired
     public UserControllerIntegrationTests(MockMvc mockMvc, IUserServices userServices) {
@@ -52,22 +48,34 @@ public class UserControllerIntegrationTests {
     void testThatAddUserReturnsHTTP201CreatedWithCorrectRequestBody() throws Exception {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         String userJson = objectMapper.writeValueAsString(userToAdd);
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+        mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson)
-        ).andExpect(MockMvcResultMatchers.status().isCreated());
+        ).andExpect(status().isCreated());
     }
 
     @Test
-    void testThatAddUserReturnsHTTP400BadRequestWithNoUsername() throws Exception{
+    void testThatAddUserReturnsHTTP400BadRequestAndCorrectResponseBodyWithNoUsername() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         userToAdd.setUsername(null);
         String userJson = objectMapper.writeValueAsString(userToAdd);
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+        mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson)
-        ).andExpect(MockMvcResultMatchers.status().isBadRequest()
-        ).andExpect(MockMvcResultMatchers.jsonPath("$.username").value("must not be blank"));
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.username").value("must not be blank"));
+    }
+
+    @Test
+    void testThatAddUserReturnsHTTP400BadRequestAndCorrectResponseBodyWithNoFirstName() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        userToAdd.setFirstName(null);
+        String userJson = objectMapper.writeValueAsString(userToAdd);
+        mockMvc.perform(post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson)
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.firstName").value("must not be blank"));
     }
 
 
@@ -75,8 +83,8 @@ public class UserControllerIntegrationTests {
     void testThatVerifyAccountReturnsHTTP200OkWithCorrectFlow() throws Exception {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         ResponseEntity<GetUserDto> user = userServices.addUser(userToAdd);
-        mockMvc.perform(MockMvcRequestBuilders.patch("/users/verify/"+user.getBody().getVerificationCode())
-        ).andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(patch("/users/verify/"+ Objects.requireNonNull(user.getBody()).getVerificationCode())
+        ).andExpect(status().isOk());
     }
 
 
@@ -86,15 +94,15 @@ public class UserControllerIntegrationTests {
     void testThatGetUserReturnsHTTP200OkWithCorrectUserCredentials() throws Exception {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         userServices.addUser(userToAdd);
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/aqrar"))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(get("/users/aqrar"))
+                .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(username = "aqrar",roles = "ADMIN")
     void testThatGetUserReturnsHTTP403ForbiddenWithIncorrectRole() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/aqrar"))
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
+        mockMvc.perform(get("/users/aqrar"))
+                .andExpect(status().isForbidden());
     }
 
 }

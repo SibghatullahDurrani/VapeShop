@@ -90,6 +90,29 @@ public class UserControllerIntegrationTests {
         ).andExpect(jsonPath("$.lastName").value("must not be blank"));
     }
 
+    @Test
+    void testThatAddUserReturnsHTTP400BadRequestAndCorrectResponseBodyWithNoEmail() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        userToAdd.setEmail(null);
+        String userJson = objectMapper.writeValueAsString(userToAdd);
+        mockMvc.perform(post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson)
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.email").value("must not be blank"));
+    }
+
+    @Test
+    void testThatAddUserReturnsHTTP400BadRequestAndCorrectResponseBodyWithIncorrectEmail() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        userToAdd.setEmail("abc");
+        String userJson = objectMapper.writeValueAsString(userToAdd);
+        mockMvc.perform(post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson)
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.email").value("must be a well-formed email address"));
+    }
 
     @Test
     void testThatVerifyAccountReturnsHTTP200OkWithCorrectFlow() throws Exception {
@@ -98,8 +121,6 @@ public class UserControllerIntegrationTests {
         mockMvc.perform(patch("/users/verify/"+ Objects.requireNonNull(user.getBody()).getVerificationCode())
         ).andExpect(status().isOk());
     }
-
-
 
     @Test
     @WithMockUser(username = "aqrar",roles = "USER")

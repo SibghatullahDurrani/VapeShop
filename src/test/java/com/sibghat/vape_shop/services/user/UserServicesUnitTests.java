@@ -179,6 +179,24 @@ public class UserServicesUnitTests {
 
     }
 
+    @Test
+    public void updateUser_ReturnsHTTP404NotFound_WithInvalidUsername(){
+        String username = "sibghat";
+        UpdateUserDto updateUserDto = UpdateUserDto.builder()
+                .firstName("sibghat")
+                .lastName("Durrani")
+                .contactNumber("87654321")
+                .build();
+
+        when(userRepository.findUserByUsername(username))
+                .thenReturn(Optional.empty());
+
+
+        ResponseEntity<GetUserDto> result = userServices.updateUser(username,updateUserDto);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
 
 
 }

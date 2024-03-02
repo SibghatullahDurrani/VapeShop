@@ -134,7 +134,7 @@ public class UserRepositoryUnitTests {
     }
 
     @Test
-    public void getAllUsers_ReturnsValidPage_WithValidData(){
+    public void getAllUsers_ReturnsValidPageAndAdmins_WithValidData(){
         User user = testDataUtil.validUser1();
         user.setRole("ROLE_ADMIN");
         User user2 = testDataUtil.validUser2();
@@ -152,7 +152,25 @@ public class UserRepositoryUnitTests {
     }
 
     @Test
-    public void getUsersBySearch_ReturnsValidPage_WithValidData(){
+    public void getAllUsers_ReturnsValidPageAndUsers_WithValidData(){
+        User user = testDataUtil.validUser1();
+        user.setRole("ROLE_ADMIN");
+        User user2 = testDataUtil.validUser2();
+        user2.setRole("ROLE_ADMIN");
+        User user3 = testDataUtil.validUser3();
+
+        userRepository.save(user);
+        userRepository.save(user2);
+        userRepository.save(user3);
+
+        PageRequest pageRequest = PageRequest.of(0,5);
+        Page<GetUserByAdminDto> result = userRepository.getAllUsers("ROLE_USER",pageRequest);
+
+        assertThat(result.stream().toList()).hasSize(1);
+    }
+
+    @Test
+    public void getUsersBySearch_ReturnsValidPageAndAdmins_WithValidData(){
         User user = testDataUtil.validUser1();
         user.setRole("ROLE_ADMIN");
         User user2 = testDataUtil.validUser2();
@@ -168,6 +186,26 @@ public class UserRepositoryUnitTests {
                 userRepository.getUsersBySearch("i","ROLE_ADMIN",pageRequest);
 
         assertThat(result.stream().toList()).hasSize(2);
+
+    }
+
+    @Test
+    public void getUsersBySearch_ReturnsValidPageAndUsers_WithValidData(){
+        User user = testDataUtil.validUser1();
+        user.setRole("ROLE_ADMIN");
+        User user2 = testDataUtil.validUser2();
+        user2.setRole("ROLE_ADMIN");
+        User user3 = testDataUtil.validUser3();
+
+        userRepository.save(user);
+        userRepository.save(user2);
+        userRepository.save(user3);
+
+        PageRequest pageRequest = PageRequest.of(0,5);
+        Page<GetUserByAdminDto> result =
+                userRepository.getUsersBySearch("i","ROLE_USER",pageRequest);
+
+        assertThat(result.stream().toList()).hasSize(1);
 
     }
 

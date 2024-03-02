@@ -5,6 +5,8 @@ import com.sibghat.vape_shop.dtos.user.*;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestDataUtil {
 
@@ -107,6 +109,63 @@ public class TestDataUtil {
                 .lastModifiedBy("sibghat")
                 .build();
 
+    }
+
+    public GetUserByAdminDto getUserByAdminDto2(){
+        return GetUserByAdminDto.builder()
+                .username("sibghat2")
+                .firstName("sibghat")
+                .lastName("durrani")
+                .email("xyz@gmail.com")
+                .contactNumber("12345678")
+                .enabled(true)
+                .createdAt(LocalDateTime.now())
+                .lastModifiedAt(LocalDateTime.now())
+                .createdBy("sibghat")
+                .lastModifiedBy("sibghat")
+                .build();
+
+    }
+
+    public GetUserByAdminDto getUserByAdminDto3(){
+        return GetUserByAdminDto.builder()
+                .username("aqrar")
+                .firstName("sibghat")
+                .lastName("durrani")
+                .email("xyz@gmail.com")
+                .contactNumber("12345678")
+                .enabled(true)
+                .createdAt(LocalDateTime.now())
+                .lastModifiedAt(LocalDateTime.now())
+                .createdBy("sibghat")
+                .lastModifiedBy("sibghat")
+                .build();
+    }
+
+    public GetUserByAdminDto getUserByAdminDto4(){
+        return GetUserByAdminDto.builder()
+                .username("aqrar2")
+                .firstName("sibghat")
+                .lastName("durrani")
+                .email("xyz@gmail.com")
+                .contactNumber("12345678")
+                .enabled(true)
+                .createdAt(LocalDateTime.now())
+                .lastModifiedAt(LocalDateTime.now())
+                .createdBy("sibghat")
+                .lastModifiedBy("sibghat")
+                .build();
+    }
+
+    public List<GetUserByAdminDto> getUserByAdminDtoList(){
+        List<GetUserByAdminDto> getUserByAdminDtoList = new ArrayList<>();
+
+        getUserByAdminDtoList.add(getUserByAdminDto());
+        getUserByAdminDtoList.add(getUserByAdminDto2());
+        getUserByAdminDtoList.add(getUserByAdminDto3());
+        getUserByAdminDtoList.add(getUserByAdminDto4());
+
+        return getUserByAdminDtoList;
     }
 
 }

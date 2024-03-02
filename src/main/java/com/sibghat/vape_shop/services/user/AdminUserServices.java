@@ -5,7 +5,6 @@ import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.mappers.user.AddUserDtoToUserMapper;
-import com.sibghat.vape_shop.mappers.user.UserToAddUserDtoMapper;
 import com.sibghat.vape_shop.mappers.user.UserToGetUserDtoMapper;
 import com.sibghat.vape_shop.repositories.UserRepository;
 import com.sibghat.vape_shop.services.conditionEvaluators.IUserRelatedConditionEvaluators;

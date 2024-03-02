@@ -1,9 +1,17 @@
 package com.sibghat.vape_shop.services.user;
 
 import com.sibghat.vape_shop.TestDataUtil;
+import com.sibghat.vape_shop.UtilMappers;
+import com.sibghat.vape_shop.domains.User;
+import com.sibghat.vape_shop.dtos.user.AddUserDto;
+import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.dtos.user.VerifyUserDto;
+import com.sibghat.vape_shop.mappers.user.AddUserDtoToUserMapper;
+import com.sibghat.vape_shop.mappers.user.UserToGetUserDtoMapper;
 import com.sibghat.vape_shop.repositories.UserRepository;
-import org.assertj.core.api.Assertions;
+import com.sibghat.vape_shop.services.conditionEvaluators.UserRelatedConditionEvaluators;
+import jakarta.persistence.EntityExistsException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,10 +20,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.Instant;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,13 +35,71 @@ public class UserServicesUnitTests {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private UserRelatedConditionEvaluators userRelatedConditionEvaluators;
+
+    @Mock
+    private AddUserDtoToUserMapper addUserDtoToUserMapper;
+
+    @Mock
+    private UserToGetUserDtoMapper userToGetUserDtoMapper;
+
+
     @InjectMocks
     private UserServices userServices;
 
     private final TestDataUtil testDataUtil = new TestDataUtil();
+    private final UtilMappers utilMappers = new UtilMappers();
 
 
+    @Test
+    public void addUser_ReturnsHTTP200OKAndValidBody_WithValidData(){
+        AddUserDto user = testDataUtil.addUserDto1();
+        User userResult = User.builder()
+                .id(1L)
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .contactNumber(user.getContactNumber())
+                .email(user.getEmail())
+                .build();
 
+        doReturn(userResult)
+                .when(addUserDtoToUserMapper).mapFrom(Mockito.any(AddUserDto.class));
+
+        when(passwordEncoder.encode(Mockito.anyString()))
+                .thenReturn(user.getPassword());
+
+        doReturn(utilMappers.userToGetUserDtoMapper(userResult))
+                .when(userToGetUserDtoMapper).mapFrom(Mockito.any(User.class));
+
+        doReturn(userResult)
+                .when(userRepository).save(Mockito.any(User.class));
+
+
+        ResponseEntity<GetUserDto> result = userServices.addUser(user);
+
+        assertThat(result.getBody()).isEqualTo(utilMappers.addUserDtoToGetUserDtoMapper(user));
+
+    }
+
+    @Test
+    public void addUser_ThrowsException_WithUsernameThatAlreadyExists(){
+        AddUserDto user = testDataUtil.addUserDto1();
+
+        willThrow(new EntityExistsException("username "))
+                .given(userRelatedConditionEvaluators)
+                .checkThatUserDoesNotAlreadyExistsBeforeAddingANewUser(Mockito.any(AddUserDto.class));
+
+        Assertions.assertThrows(
+                EntityExistsException.class,
+                () -> userServices.addUser(user),
+                "username ");
+    }
 
     @Test
     public void verifyUser_ReturnsHTTP404NotFound_WithIncorrectVerificationCode(){
@@ -39,7 +108,7 @@ public class UserServicesUnitTests {
 
         ResponseEntity<HttpStatus> result = userServices.verifyUser("xyz");
 
-        Assertions.assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -50,7 +119,7 @@ public class UserServicesUnitTests {
 
         ResponseEntity<HttpStatus> result = userServices.verifyUser("xyz");
 
-        Assertions.assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     }
 
@@ -63,7 +132,7 @@ public class UserServicesUnitTests {
 
         ResponseEntity<HttpStatus> result = userServices.verifyUser("xyz");
 
-        Assertions.assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
 

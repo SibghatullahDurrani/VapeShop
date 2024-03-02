@@ -50,7 +50,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     SELECT new com.sibghat.vape_shop.dtos.user.GetUserByAdminDto(
     u.username, u.firstName, u.lastName, u.email, u.contactNumber,
     u.enabled, u.createdAt, u.lastModifiedAt, u.createdBy,u.lastModifiedBy)
-    FROM User u WHERE u.username = ?1
+    FROM User u WHERE u.username = ?1 AND u.role = "ROLE_ADMIN"
 """)
     Optional<GetUserByAdminDto> getAdminByUsername(String username);
 

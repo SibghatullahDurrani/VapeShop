@@ -42,12 +42,12 @@ public class AdminUserServices implements IAdminUserServices{
     }
 
     @Override
-    public ResponseEntity<GetUserDto> addAdmin(AddUserDto adminToAdd, String CreatedBy) {
+    public ResponseEntity<GetUserDto> addAdmin(AddUserDto adminToAdd, String createdBy) {
         userRelatedConditionEvaluators.checkThatUserDoesNotAlreadyExistsBeforeAddingANewUser(adminToAdd);
         User user = addUserDtoToUserMapper.mapFrom(adminToAdd);
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
-        user.setCreatedBy(CreatedBy);
+        user.setCreatedBy(createdBy);
         user.setRole("ROLE_ADMIN");
         return new ResponseEntity<>(
                 userToGetUserDtoMapper.mapFrom(userRepository.save(user)),

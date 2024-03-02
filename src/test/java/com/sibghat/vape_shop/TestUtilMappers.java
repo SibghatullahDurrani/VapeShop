@@ -5,7 +5,7 @@ import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 
-public class UtilMappers {
+public class TestUtilMappers {
 
     public GetUserDto addUserDtoToGetUserDtoMapper (AddUserDto addUserDto){
         return GetUserDto.builder()
@@ -41,6 +41,17 @@ public class UtilMappers {
                 .lastModifiedAt(user.getLastModifiedAt())
                 .createdBy(user.getCreatedBy())
                 .lastModifiedBy(user.getLastModifiedBy())
+                .build();
+    }
+
+    public User addUserDtoToUserMapper(AddUserDto addUserDto){
+        return User.builder()
+                .username(addUserDto.getUsername())
+                .firstName(addUserDto.getFirstName())
+                .lastName(addUserDto.getLastName())
+                .email(addUserDto.getEmail())
+                .password(addUserDto.getPassword())
+                .contactNumber(addUserDto.getContactNumber())
                 .build();
     }
 }

@@ -1,7 +1,7 @@
 package com.sibghat.vape_shop.services.user;
 
 import com.sibghat.vape_shop.TestDataUtil;
-import com.sibghat.vape_shop.UtilMappers;
+import com.sibghat.vape_shop.TestUtilMappers;
 import com.sibghat.vape_shop.domains.User;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
@@ -47,10 +47,10 @@ public class UserServicesUnitTests {
 
 
     @InjectMocks
-    private UserServices userServices;
+    private UserServices underTest;
 
     private final TestDataUtil testDataUtil = new TestDataUtil();
-    private final UtilMappers utilMappers = new UtilMappers();
+    private final TestUtilMappers testUtilMappers = new TestUtilMappers();
 
 
     @Test
@@ -72,16 +72,18 @@ public class UserServicesUnitTests {
         when(passwordEncoder.encode(Mockito.anyString()))
                 .thenReturn(user.getPassword());
 
-        doReturn(utilMappers.userToGetUserDtoMapper(userResult))
+        doReturn(testUtilMappers.userToGetUserDtoMapper(userResult))
                 .when(userToGetUserDtoMapper).mapFrom(Mockito.any(User.class));
 
         doReturn(userResult)
                 .when(userRepository).save(Mockito.any(User.class));
 
 
-        ResponseEntity<GetUserDto> result = userServices.addUser(user);
+        ResponseEntity<GetUserDto> result = underTest.addUser(user);
 
-        assertThat(result.getBody()).isEqualTo(utilMappers.addUserDtoToGetUserDtoMapper(user));
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(result.getBody()).isEqualTo(testUtilMappers.addUserDtoToGetUserDtoMapper(user));
 
     }
 
@@ -90,7 +92,7 @@ public class UserServicesUnitTests {
         when(userRepository.getUserByVerificationCode(Mockito.anyString()))
                 .thenReturn(Optional.empty());
 
-        ResponseEntity<HttpStatus> result = userServices.verifyUser("xyz");
+        ResponseEntity<HttpStatus> result = underTest.verifyUser("xyz");
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -101,7 +103,7 @@ public class UserServicesUnitTests {
         when(userRepository.getUserByVerificationCode(Mockito.anyString()))
                 .thenReturn(Optional.ofNullable(user));
 
-        ResponseEntity<HttpStatus> result = userServices.verifyUser("xyz");
+        ResponseEntity<HttpStatus> result = underTest.verifyUser("xyz");
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -114,7 +116,7 @@ public class UserServicesUnitTests {
         when(userRepository.getUserByVerificationCode(Mockito.anyString()))
                 .thenReturn(Optional.ofNullable(user));
 
-        ResponseEntity<HttpStatus> result = userServices.verifyUser("xyz");
+        ResponseEntity<HttpStatus> result = underTest.verifyUser("xyz");
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -127,7 +129,7 @@ public class UserServicesUnitTests {
         when(userRepository.getUserByUsername(username))
                 .thenReturn(Optional.of(user));
 
-        ResponseEntity<GetUserDto> result = userServices.getUser(username);
+        ResponseEntity<GetUserDto> result = underTest.getUser(username);
 
         assertThat(result.getBody()).isEqualTo(user);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -141,7 +143,7 @@ public class UserServicesUnitTests {
         when(userRepository.getUserByUsername(username))
                 .thenReturn(Optional.empty());
 
-        ResponseEntity<GetUserDto> result = userServices.getUser(username);
+        ResponseEntity<GetUserDto> result = underTest.getUser(username);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -169,12 +171,12 @@ public class UserServicesUnitTests {
                 .thenReturn(updatedUser);
 
         when(userToGetUserDtoMapper.mapFrom(updatedUser))
-                .thenReturn(utilMappers.userToGetUserDtoMapper(updatedUser));
+                .thenReturn(testUtilMappers.userToGetUserDtoMapper(updatedUser));
 
 
-        ResponseEntity<GetUserDto> result = userServices.updateUser(username,updateUserDto);
+        ResponseEntity<GetUserDto> result = underTest.updateUser(username,updateUserDto);
 
-        assertThat(result.getBody()).isEqualTo(utilMappers.userToGetUserDtoMapper(updatedUser));
+        assertThat(result.getBody()).isEqualTo(testUtilMappers.userToGetUserDtoMapper(updatedUser));
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     }
@@ -192,7 +194,7 @@ public class UserServicesUnitTests {
                 .thenReturn(Optional.empty());
 
 
-        ResponseEntity<GetUserDto> result = userServices.updateUser(username,updateUserDto);
+        ResponseEntity<GetUserDto> result = underTest.updateUser(username,updateUserDto);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }

@@ -1,7 +1,7 @@
 package com.sibghat.vape_shop.repositories;
 
 import com.sibghat.vape_shop.TestDataUtil;
-import com.sibghat.vape_shop.UtilMappers;
+import com.sibghat.vape_shop.TestUtilMappers;
 import com.sibghat.vape_shop.domains.User;
 import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
@@ -27,7 +27,7 @@ public class UserRepositoryUnitTests {
     @Autowired
     private EntityManager entityManager;
 
-    private final UtilMappers utilMappers = new UtilMappers();
+    private final TestUtilMappers testUtilMappers = new TestUtilMappers();
     private final TestDataUtil testDataUtil = new TestDataUtil();
 
     @Test
@@ -46,7 +46,7 @@ public class UserRepositoryUnitTests {
         Optional<GetUserDto> result = userRepository.getUserByUsername(user.getUsername());
 
         assertThat(result).isPresent();
-        assertThat(result.get()).isEqualTo(utilMappers.userToGetUserDtoMapper(user));
+        assertThat(result.get()).isEqualTo(testUtilMappers.userToGetUserDtoMapper(user));
 
     }
 
@@ -130,7 +130,7 @@ public class UserRepositoryUnitTests {
 
         assertThat(result).isPresent();
         result.get().setCreatedAt(result.get().getCreatedAt().minusNanos(result.get().getCreatedAt().getNano()));
-        assertThat(result.get()).isEqualTo(utilMappers.userToGetUserByAdminDto(user));
+        assertThat(result.get()).isEqualTo(testUtilMappers.userToGetUserByAdminDto(user));
     }
 
     @Test

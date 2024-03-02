@@ -1,12 +1,10 @@
 package com.sibghat.vape_shop;
 
 import com.sibghat.vape_shop.domains.User;
-import com.sibghat.vape_shop.dtos.user.AddUserDto;
-import com.sibghat.vape_shop.dtos.user.GetUserDto;
-import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
-import com.sibghat.vape_shop.dtos.user.VerifyUserDto;
+import com.sibghat.vape_shop.dtos.user.*;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 public class TestDataUtil {
 
@@ -93,6 +91,22 @@ public class TestDataUtil {
                 .contactNumber("12345678")
                 .verificationCode("xyzasd")
                 .build();
+    }
+
+    public GetUserByAdminDto getUserByAdminDto(){
+        return GetUserByAdminDto.builder()
+                .username("sibghat")
+                .firstName("sibghat")
+                .lastName("durrani")
+                .email("xyz@gmail.com")
+                .contactNumber("12345678")
+                .enabled(true)
+                .createdAt(LocalDateTime.now())
+                .lastModifiedAt(LocalDateTime.now())
+                .createdBy("sibghat")
+                .lastModifiedBy("sibghat")
+                .build();
+
     }
 
 }

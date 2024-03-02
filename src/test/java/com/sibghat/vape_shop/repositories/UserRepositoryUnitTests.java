@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.time.temporal.TemporalUnit;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,12 +46,7 @@ public class UserRepositoryUnitTests {
         Optional<GetUserDto> result = userRepository.getUserByUsername(user.getUsername());
 
         assertThat(result).isPresent();
-        assertThat(result.get().getUsername()).isEqualTo(user.getUsername());
-        assertThat(result.get().getFirstName()).isEqualTo(user.getFirstName());
-        assertThat(result.get().getLastName()).isEqualTo(user.getLastName());
-        assertThat(result.get().getEmail()).isEqualTo(user.getEmail());
-        assertThat(result.get().getContactNumber()).isEqualTo(user.getContactNumber());
-        assertThat(result.get().getVerificationCode()).isEqualTo(user.getVerificationCode());
+        assertThat(result.get()).isEqualTo(utilMappers.userToGetUserDtoMapper(user));
 
     }
 
@@ -135,16 +129,8 @@ public class UserRepositoryUnitTests {
         Optional<GetUserByAdminDto> result = userRepository.getAdminByUsername(user.getUsername());
 
         assertThat(result).isPresent();
-        assertThat(result.get().getUsername()).isEqualTo(user.getUsername());
-        assertThat(result.get().getFirstName()).isEqualTo(user.getFirstName());
-        assertThat(result.get().getLastName()).isEqualTo(user.getLastName());
-        assertThat(result.get().getEmail()).isEqualTo(user.getEmail());
-        assertThat(result.get().getContactNumber()).isEqualTo(user.getContactNumber());
-        assertThat(result.get().getEnabled()).isEqualTo(user.isEnabled());
-        assertThat(result.get().getCreatedAt()).isBeforeOrEqualTo(user.getCreatedAt());
-        assertThat(result.get().getLastModifiedAt()).isEqualTo(user.getLastModifiedAt());
-        assertThat(result.get().getCreatedBy()).isEqualTo(user.getCreatedBy());
-        assertThat(result.get().getLastModifiedBy()).isEqualTo(user.getLastModifiedBy());
+        result.get().setCreatedAt(result.get().getCreatedAt().minusNanos(result.get().getCreatedAt().getNano()));
+        assertThat(result.get()).isEqualTo(utilMappers.userToGetUserByAdminDto(user));
     }
 
     @Test

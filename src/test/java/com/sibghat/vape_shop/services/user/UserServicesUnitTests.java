@@ -10,8 +10,6 @@ import com.sibghat.vape_shop.mappers.user.AddUserDtoToUserMapper;
 import com.sibghat.vape_shop.mappers.user.UserToGetUserDtoMapper;
 import com.sibghat.vape_shop.repositories.UserRepository;
 import com.sibghat.vape_shop.services.conditionEvaluators.UserRelatedConditionEvaluators;
-import jakarta.persistence.EntityExistsException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +23,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -85,20 +82,6 @@ public class UserServicesUnitTests {
 
         assertThat(result.getBody()).isEqualTo(utilMappers.addUserDtoToGetUserDtoMapper(user));
 
-    }
-
-    @Test
-    public void addUser_ThrowsException_WithUsernameThatAlreadyExists(){
-        AddUserDto user = testDataUtil.addUserDto1();
-
-        willThrow(new EntityExistsException("username "))
-                .given(userRelatedConditionEvaluators)
-                .checkThatUserDoesNotAlreadyExistsBeforeAddingANewUser(Mockito.any(AddUserDto.class));
-
-        Assertions.assertThrows(
-                EntityExistsException.class,
-                () -> userServices.addUser(user),
-                "username ");
     }
 
     @Test

@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -87,6 +88,8 @@ public class UserServices implements IUserServices {
             userToUpdate.get().setFirstName(userToUpdateDto.getFirstName());
             userToUpdate.get().setLastName(userToUpdateDto.getLastName());
             userToUpdate.get().setContactNumber(userToUpdateDto.getContactNumber());
+            userToUpdate.get().setLastModifiedAt(LocalDateTime.now());
+            userToUpdate.get().setLastModifiedBy(username);
             userRepository.save(userToUpdate.get());
 
             return new ResponseEntity<>(userToGetUserDtoMapper.mapFrom(userToUpdate.get()),HttpStatus.OK);

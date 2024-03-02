@@ -5,6 +5,7 @@ import com.sibghat.vape_shop.UtilMappers;
 import com.sibghat.vape_shop.domains.User;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
+import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
 import com.sibghat.vape_shop.dtos.user.VerifyUserDto;
 import com.sibghat.vape_shop.mappers.user.AddUserDtoToUserMapper;
 import com.sibghat.vape_shop.mappers.user.UserToGetUserDtoMapper;
@@ -116,6 +117,38 @@ public class UserServicesUnitTests {
         ResponseEntity<HttpStatus> result = userServices.verifyUser("xyz");
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void updateUser_ReturnsHTTP200Ok_WithValidData(){
+
+        String username = "sibghat";
+        UpdateUserDto updateUserDto = UpdateUserDto.builder()
+                .firstName("sibghat")
+                .lastName("Durrani")
+                .contactNumber("87654321")
+                .build();
+        User user = testDataUtil.validUser1();
+        User updatedUser = testDataUtil.validUser1();
+        updatedUser.setFirstName(updateUserDto.getFirstName());
+        updatedUser.setLastName(updateUserDto.getLastName());
+        updatedUser.setContactNumber(updateUserDto.getContactNumber());
+
+        when(userRepository.findUserByUsername(username))
+                .thenReturn(Optional.ofNullable(user));
+
+        assert user != null;
+        when(userRepository.save(user))
+                .thenReturn(user);
+
+        when(userToGetUserDtoMapper.mapFrom(user))
+                .thenReturn(utilMappers.userToGetUserDtoMapper(updatedUser));
+
+
+        ResponseEntity<GetUserDto> result = userServices.updateUser(username,updateUserDto);
+
+        assertThat(result.getBody()).isEqualTo(utilMappers.userToGetUserDtoMapper(user));
+
     }
 
 

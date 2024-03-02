@@ -2,6 +2,7 @@ package com.sibghat.vape_shop;
 
 import com.sibghat.vape_shop.domains.User;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
+import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
 import com.sibghat.vape_shop.dtos.user.VerifyUserDto;
 
 import java.time.Instant;
@@ -18,7 +19,7 @@ public class TestDataUtil {
                 .password("xyz")
                 .contactNumber("12345678")
                 .verificationCode("xyz")
-                .createdBy("xyz")
+                .createdBy("sibghat")
                 .build();
     }
 
@@ -71,6 +72,14 @@ public class TestDataUtil {
                 .password("aqrar")
                 .contactNumber("123094123")
                 .email("aqrar123@gmail.com")
+                .build();
+    }
+
+    public UpdateUserDto updateUserDto(){
+        return UpdateUserDto.builder()
+                .firstName("aqrar")
+                .lastName("bazai")
+                .contactNumber("12345678")
                 .build();
     }
 

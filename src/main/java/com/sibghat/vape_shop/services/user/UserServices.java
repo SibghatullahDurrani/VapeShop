@@ -90,9 +90,9 @@ public class UserServices implements IUserServices {
             userToUpdate.get().setContactNumber(userToUpdateDto.getContactNumber());
             userToUpdate.get().setLastModifiedAt(LocalDateTime.now());
             userToUpdate.get().setLastModifiedBy(username);
-            userRepository.save(userToUpdate.get());
+            User savedUser = userRepository.save(userToUpdate.get());
 
-            return new ResponseEntity<>(userToGetUserDtoMapper.mapFrom(userToUpdate.get()),HttpStatus.OK);
+            return new ResponseEntity<>(userToGetUserDtoMapper.mapFrom(savedUser),HttpStatus.OK);
         }else{
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

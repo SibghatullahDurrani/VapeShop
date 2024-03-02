@@ -2,6 +2,7 @@ package com.sibghat.vape_shop;
 
 import com.sibghat.vape_shop.domains.User;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
+import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
 import com.sibghat.vape_shop.dtos.user.VerifyUserDto;
 
@@ -80,6 +81,17 @@ public class TestDataUtil {
                 .firstName("aqrar")
                 .lastName("bazai")
                 .contactNumber("12345678")
+                .build();
+    }
+
+    public GetUserDto getUserDto(){
+        return GetUserDto.builder()
+                .username("sibghat")
+                .firstName("xyz")
+                .lastName("xyz")
+                .email("xyz@123.com")
+                .contactNumber("12345678")
+                .verificationCode("xyzasd")
                 .build();
     }
 

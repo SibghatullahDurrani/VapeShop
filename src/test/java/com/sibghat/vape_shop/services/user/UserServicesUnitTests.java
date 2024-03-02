@@ -120,7 +120,34 @@ public class UserServicesUnitTests {
     }
 
     @Test
-    public void updateUser_ReturnsHTTP200Ok_WithValidData(){
+    public void getUser_ReturnsHTTP200OkAndUser_WithValidUsername(){
+        GetUserDto user = testDataUtil.getUserDto();
+        String username = user.getUsername();
+
+        when(userRepository.getUserByUsername(username))
+                .thenReturn(Optional.of(user));
+
+        ResponseEntity<GetUserDto> result = userServices.getUser(username);
+
+        assertThat(result.getBody()).isEqualTo(user);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void getUser_ReturnsHTTP404NotFound_WithInValidUsername(){
+        GetUserDto user = testDataUtil.getUserDto();
+        String username = user.getUsername();
+
+        when(userRepository.getUserByUsername(username))
+                .thenReturn(Optional.empty());
+
+        ResponseEntity<GetUserDto> result = userServices.getUser(username);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void updateUser_ReturnsHTTP200OkAndUpdatedUser_WithValidData(){
 
         String username = "sibghat";
         UpdateUserDto updateUserDto = UpdateUserDto.builder()
@@ -128,26 +155,27 @@ public class UserServicesUnitTests {
                 .lastName("Durrani")
                 .contactNumber("87654321")
                 .build();
-        User user = testDataUtil.validUser1();
         User updatedUser = testDataUtil.validUser1();
+
+        when(userRepository.findUserByUsername(username))
+                .thenReturn(Optional.ofNullable(updatedUser));
+
+        assert updatedUser != null;
         updatedUser.setFirstName(updateUserDto.getFirstName());
         updatedUser.setLastName(updateUserDto.getLastName());
         updatedUser.setContactNumber(updateUserDto.getContactNumber());
 
-        when(userRepository.findUserByUsername(username))
-                .thenReturn(Optional.ofNullable(user));
+        when(userRepository.save(updatedUser))
+                .thenReturn(updatedUser);
 
-        assert user != null;
-        when(userRepository.save(user))
-                .thenReturn(user);
-
-        when(userToGetUserDtoMapper.mapFrom(user))
+        when(userToGetUserDtoMapper.mapFrom(updatedUser))
                 .thenReturn(utilMappers.userToGetUserDtoMapper(updatedUser));
 
 
         ResponseEntity<GetUserDto> result = userServices.updateUser(username,updateUserDto);
 
-        assertThat(result.getBody()).isEqualTo(utilMappers.userToGetUserDtoMapper(user));
+        assertThat(result.getBody()).isEqualTo(utilMappers.userToGetUserDtoMapper(updatedUser));
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     }
 

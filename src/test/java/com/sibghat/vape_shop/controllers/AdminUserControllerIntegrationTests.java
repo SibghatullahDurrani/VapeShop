@@ -1,6 +1,7 @@
 package com.sibghat.vape_shop.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 import com.sibghat.vape_shop.TestDataUtil;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.services.user.IAdminUserServices;
@@ -14,10 +15,14 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -301,17 +306,45 @@ public class AdminUserControllerIntegrationTests {
         ).andExpect(status().isUnauthorized());
     }
 
-//    @Test
-//    @WithMockUser(username = "aqrar",roles = "ADMIN")
-//    public void getAllAdmins_Return200OKAndCorrectData_WithValidParamsAndNoUsername() throws Exception{
-//        AddUserDto userToAdd = testDataUtil.addUserDto1();
-//        AddUserDto userToAdd2 = testDataUtil.addUserDto2();
-//        adminUserServices.addAdmin(userToAdd, userToAdd.getUsername());
-//    }
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllAdmins_Return200OKAndCorrectData_WithValidParamsAndNoUsernameSearch() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        AddUserDto userToAdd2 = testDataUtil.addUserDto2();
+        AddUserDto userToAdd3 = testDataUtil.addUserDto3();
+        adminUserServices.addAdmin(userToAdd, userToAdd.getUsername());
+        adminUserServices.addAdmin(userToAdd2, userToAdd2.getUsername());
+        adminUserServices.addAdmin(userToAdd3, userToAdd3.getUsername());
 
+        MvcResult result = mockMvc.perform(get("/users/admins")
+                .param("page","0")
+                .param("size","5")
+                .param("username","")
+        ).andExpect(status().isOk()
+        ).andReturn();
 
+        List<String> contentJson = JsonPath.read(result.getResponse().getContentAsString(),"$.content");
+        assertThat(contentJson).hasSize(3);
+    }
 
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllAdmins_Return200OKAndCorrectData_WithValidParamsAndUsernameSearch() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        AddUserDto userToAdd2 = testDataUtil.addUserDto2();
+        AddUserDto userToAdd3 = testDataUtil.addUserDto3();
+        adminUserServices.addAdmin(userToAdd, userToAdd.getUsername());
+        adminUserServices.addAdmin(userToAdd2, userToAdd2.getUsername());
+        adminUserServices.addAdmin(userToAdd3, userToAdd3.getUsername());
 
+        MvcResult result = mockMvc.perform(get("/users/admins")
+                .param("page","0")
+                .param("size","5")
+                .param("username","s")
+        ).andExpect(status().isOk()
+        ).andReturn();
 
-
+        List<String> contentJson = JsonPath.read(result.getResponse().getContentAsString(),"$.content");
+        assertThat(contentJson).hasSize(2);
+    }
 }

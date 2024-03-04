@@ -76,6 +76,28 @@ public class TestDataUtil {
                 .build();
     }
 
+    public AddUserDto addUserDto2(){
+        return AddUserDto.builder()
+                .firstName("sibghat")
+                .lastName("durrani")
+                .username("sibghat")
+                .password("aqrar")
+                .contactNumber("1230941231")
+                .email("sibghat@gmail.com")
+                .build();
+    }
+
+    public AddUserDto addUserDto3(){
+        return AddUserDto.builder()
+                .firstName("sami")
+                .lastName("durrani")
+                .username("sami")
+                .password("aqrar")
+                .contactNumber("1230941232")
+                .email("sami@gmail.com")
+                .build();
+    }
+
     public UpdateUserDto updateUserDto(){
         return UpdateUserDto.builder()
                 .firstName("aqrar updated")

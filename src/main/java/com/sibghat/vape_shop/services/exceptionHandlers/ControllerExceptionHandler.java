@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -28,12 +29,20 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(EntityExistsException.class)
-    public ResponseEntity<?> handleDataIntegrityViolationException(EntityExistsException exp) {
+    public ResponseEntity<?> handleEntityExistsException(EntityExistsException exp) {
         String error = exp.getMessage();
         var errors = new HashMap<String,String>();
         for(String i : error.split("\\s+")){
             errors.put(i,"already exists");
         }
         return new ResponseEntity<>(errors, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<?> handleMissingServletRequestParameterException(MissingServletRequestParameterException exp){
+        var errors = new HashMap<String,String>();
+        String parameterName = exp.getParameterName();
+        errors.put(parameterName,"parameter required");
+        return new ResponseEntity<>(errors,HttpStatus.BAD_REQUEST);
     }
 }

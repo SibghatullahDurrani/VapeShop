@@ -197,6 +197,37 @@ public class AdminUserControllerIntegrationTests {
         ).andExpect(status().isForbidden());
     }
 
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAdmin_ReturnsHTTP200OK_WithValidUsername() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        adminUserServices.addAdmin(userToAdd, userToAdd.getUsername());
+
+        mockMvc.perform(get("/users/admins/"  + userToAdd.getUsername())
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAdmin_Returns403Forbidden_WithUnauthorizedUsername() throws Exception{
+        mockMvc.perform(get("/users/admins/xyz")
+        ).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "USER")
+    public void getAdmin_Returns403Forbidden_WithUserRole() throws Exception{
+        mockMvc.perform(get("/users/admins/xyz")
+        ).andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void getAdmin_Returns401Unauthorized_WithNoAuthentication() throws Exception{
+        mockMvc.perform(get("/users/admins/xyz")
+        ).andExpect(status().isUnauthorized());
+    }
+
+
 
 
 

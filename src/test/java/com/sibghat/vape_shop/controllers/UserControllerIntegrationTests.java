@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sibghat.vape_shop.TestDataUtil;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
+import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
 import com.sibghat.vape_shop.services.user.IUserServices;
-import lombok.With;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +17,12 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Objects;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -219,8 +221,6 @@ public class UserControllerIntegrationTests {
 
     @Test
     public void verifyUser_ReturnsHTTP404NotFound_WithIncorrectVerificationCode() throws Exception {
-        AddUserDto userToAdd = testDataUtil.addUserDto1();
-        ResponseEntity<GetUserDto> user = userServices.addUser(userToAdd);
         mockMvc.perform(patch("/users/verify/"+ "Xyz")
         ).andExpect(status().isNotFound());
     }
@@ -254,6 +254,117 @@ public class UserControllerIntegrationTests {
     public void getUser_ReturnsHTTP401Unauthorized_WithNoAuthentication() throws Exception {
         mockMvc.perform(get("/users/aqrar"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "USER")
+    public void updateUser_ReturnsHTTP200OK_WithCorrectData() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        userServices.addUser(userToAdd);
+
+        UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
+        String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
+
+        mockMvc.perform(put("/users/aqrar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedUserDataJson)
+        ).andExpect(status().isOk()
+        ).andExpect(jsonPath("$.username").value(userToAdd.getUsername())
+        ).andExpect(jsonPath("$.firstName").value(updatedUserData.getFirstName())
+        ).andExpect(jsonPath("$.lastName").value(updatedUserData.getLastName())
+        ).andExpect(jsonPath("$.contactNumber").value(updatedUserData.getContactNumber())
+        ).andExpect(jsonPath("$.email").value(userToAdd.getEmail()));
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "USER")
+    public void updateUser_Returns400BadRequest_WithNoFirstName() throws Exception{
+        UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
+        updatedUserData.setFirstName(null);
+        String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
+
+        mockMvc.perform(put("/users/aqrar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedUserDataJson)
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.firstName").value("must not be blank"));
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "USER")
+    public void updateUser_Returns400BadRequest_WithNoLastName() throws Exception{
+        UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
+        updatedUserData.setLastName(null);
+        String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
+
+        mockMvc.perform(put("/users/aqrar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedUserDataJson)
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.lastName").value("must not be blank"));
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "USER")
+    public void updateUser_Returns400BadRequest_WithNoContactNumber() throws Exception{
+        UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
+        updatedUserData.setContactNumber(null);
+        String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
+
+        mockMvc.perform(put("/users/aqrar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedUserDataJson)
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.contactNumber").value("must not be blank"));
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "USER")
+    public void updateUser_Returns400BadRequest_WithNoData() throws Exception{
+        UpdateUserDto updateUserDto = UpdateUserDto.builder().build();
+        String updatedUserDataJson = objectMapper.writeValueAsString(updateUserDto);
+
+        mockMvc.perform(put("/users/aqrar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedUserDataJson)
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.contactNumber").value("must not be blank")
+        ).andExpect(jsonPath("$.lastName").value("must not be blank")
+        ).andExpect(jsonPath("$.firstName").value("must not be blank"));
+
+    }
+
+    @Test
+    public void updateUser_ReturnsHTTP401Unauthorized_WithNoAuthentication() throws Exception {
+        mockMvc.perform(put("/users/aqrar"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    void updateUser_ReturnsHTTP403Forbidden_WithIncorrectRole() throws Exception {
+        UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
+        String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
+
+        mockMvc.perform(put("/users/aqrar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedUserDataJson))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "xyz", roles = "USER")
+    public void Update_Returns403Forbidden_WhenUpdatingUserInformationThatIsNotTheirs() throws Exception {
+        UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
+        String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
+
+        mockMvc.perform(put("/users/aqrar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedUserDataJson))
+                .andExpect(status().isForbidden());
     }
 
 }

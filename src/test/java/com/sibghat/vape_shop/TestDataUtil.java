@@ -78,9 +78,9 @@ public class TestDataUtil {
 
     public UpdateUserDto updateUserDto(){
         return UpdateUserDto.builder()
-                .firstName("aqrar")
-                .lastName("bazai")
-                .contactNumber("12345678")
+                .firstName("aqrar updated")
+                .lastName("bazai updated")
+                .contactNumber("12345678 updated")
                 .build();
     }
 

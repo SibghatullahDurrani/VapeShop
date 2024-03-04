@@ -53,7 +53,7 @@ public class UserController {
 """)
     public ResponseEntity<GetUserDto> updateUser(
             @PathVariable String username,
-            @RequestBody UpdateUserDto userToUpdate
+            @Valid @RequestBody UpdateUserDto userToUpdate
     ){
         return userServices.updateUser(username, userToUpdate);
     }

@@ -1,5 +1,6 @@
 package com.sibghat.vape_shop.controllers;
 
+import com.sibghat.vape_shop.controllers.interfaces.IUserController;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
@@ -8,12 +9,12 @@ import com.sibghat.vape_shop.services.user.UserServices;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class UserController {
+public class UserController implements IUserController {
 
     private final IUserServices userServices;
 
@@ -21,36 +22,23 @@ public class UserController {
         this.userServices = userServices;
     }
 
-    @PostMapping("/users")
-    public ResponseEntity<GetUserDto> addUser(@Valid @RequestBody AddUserDto addUserDto){
-        return userServices.addUser(addUserDto);
+
+    @Override
+    public ResponseEntity<GetUserDto> addUser(AddUserDto userToAdd) {
+        return userServices.addUser(userToAdd);
     }
 
-    @PatchMapping("/users/verify/{verification_code}")
+    @Override
     public ResponseEntity<HttpStatus> verifyUser(@PathVariable String verification_code){
         return userServices.verifyUser(verification_code);
     }
 
-    @GetMapping("/users/{username}")
-    @PreAuthorize("""
-    #username == authentication.name and
-    hasRole("USER")
-""")
-    @PostAuthorize("""
-    returnObject.body.username == authentication.name
-""")
+   @Override
     public ResponseEntity<GetUserDto> getUser(@PathVariable String username){
         return userServices.getUser(username);
     }
 
-    @PutMapping("/users/{username}")
-    @PreAuthorize("""
-    #username == authentication.name and
-    hasRole("USER")
-""")
-    @PostAuthorize("""
-    returnObject.body.username == authentication.name
-""")
+    @Override
     public ResponseEntity<GetUserDto> updateUser(
             @PathVariable String username,
             @Valid @RequestBody UpdateUserDto userToUpdate

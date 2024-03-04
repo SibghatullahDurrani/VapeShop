@@ -6,8 +6,6 @@ import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Optional;
-
 public interface IAdminUserServices {
 
     ResponseEntity<GetUserDto> addAdmin(AddUserDto adminToAdd, String createdBy);
@@ -15,6 +13,6 @@ public interface IAdminUserServices {
 
     ResponseEntity<GetUserByAdminDto> getAdmin(String username);
 
-    ResponseEntity<Page<GetUserByAdminDto>> getAllUsers(int page, int size, String role, Optional<String> username);
+    ResponseEntity<Page<GetUserByAdminDto>> getAllUsers(int page, int size, String role, String username);
 
 }

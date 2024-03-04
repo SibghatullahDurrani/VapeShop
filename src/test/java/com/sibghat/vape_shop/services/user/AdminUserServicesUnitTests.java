@@ -121,7 +121,7 @@ public class AdminUserServicesUnitTests {
                 page,
                 size,
                 "xyz",
-                Optional.empty()
+                ""
         );
 
         assertThat(result.getBody()).isNotNull();
@@ -154,7 +154,7 @@ public class AdminUserServicesUnitTests {
                 page,
                 size,
                 "xyz",
-                Optional.of("aqrar")
+                "aqrar"
         );
 
         assertThat(result.getBody()).isNotNull();

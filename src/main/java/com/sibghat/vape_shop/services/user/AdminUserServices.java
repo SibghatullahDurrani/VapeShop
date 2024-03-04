@@ -69,14 +69,14 @@ public class AdminUserServices implements IAdminUserServices{
             int page,
             int size,
             String role,
-            Optional<String> username
+            String username
     ) {
         PageRequest pageRequest = PageRequest.of(page,size);
         Page<GetUserByAdminDto> usersPage;
         if(username.isEmpty()){
             usersPage = userRepository.getAllUsers(role, pageRequest);
         }else{
-            usersPage = userRepository.getUsersBySearch(username.get(), role, pageRequest);
+            usersPage = userRepository.getUsersBySearch(username, role, pageRequest);
         }
         return new ResponseEntity<>(usersPage, HttpStatus.OK);
     }

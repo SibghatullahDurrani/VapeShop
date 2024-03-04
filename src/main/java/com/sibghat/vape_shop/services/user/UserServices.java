@@ -83,6 +83,8 @@ public class UserServices implements IUserServices {
     @Override
     public ResponseEntity<GetUserDto> updateUser(String username, UpdateUserDto userToUpdateDto) {
         Optional<User> userToUpdate = userRepository.findUserByUsername(username);
+        userRelatedConditionEvaluators
+                .checkThatContactNumberDoesNotAlreadyExistsBeforeUpdatingUser(userToUpdateDto.getContactNumber());
         if(userToUpdate.isPresent()){
             userToUpdate.get().setFirstName(userToUpdateDto.getFirstName());
             userToUpdate.get().setLastName(userToUpdateDto.getLastName());

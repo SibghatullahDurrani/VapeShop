@@ -34,4 +34,11 @@ public class UserRelatedConditionEvaluators implements IUserRelatedConditionEval
             throw new EntityExistsException(stringBuilder.toString());
         }
     }
+
+    @Override
+    public void checkThatContactNumberDoesNotAlreadyExistsBeforeUpdatingUser(String contactNumber) {
+        if (userRepository.existsByContactNumber(contactNumber)){
+            throw new EntityExistsException("contactNumber ");
+        }
+    }
 }

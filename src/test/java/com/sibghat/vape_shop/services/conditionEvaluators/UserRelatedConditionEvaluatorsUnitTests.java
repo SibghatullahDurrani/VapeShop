@@ -108,4 +108,17 @@ public class UserRelatedConditionEvaluatorsUnitTests {
 
     }
 
+    @Test
+    public void checkThatContactNumberDoesNotAlreadyExistsBeforeAddingANewUser_ThrowsException_WithContactNumberThatAlreadyExists() {
+        doReturn(true)
+                .when(userRepository).existsByContactNumber(Mockito.anyString());
+
+        Assertions.assertThrows(
+                EntityExistsException.class,
+                () -> underTest
+                        .checkThatContactNumberDoesNotAlreadyExistsBeforeUpdatingUser(Mockito.anyString()),
+                "contactNumber"
+        );
+    }
+
 }

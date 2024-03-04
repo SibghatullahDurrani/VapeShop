@@ -338,6 +338,24 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser(username = "aqrar", roles = "USER")
+    public void updateUser_Returns409Conflict_WithContactNumberThatAlreadyExists() throws Exception{
+        AddUserDto addUserDto = testDataUtil.addUserDto1();
+        userServices.addUser(addUserDto);
+
+        UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
+        updatedUserData.setContactNumber(addUserDto.getContactNumber());
+        String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
+
+        mockMvc.perform(put("/users/aqrar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedUserDataJson)
+        ).andExpect(status().isConflict()
+        ).andExpect(jsonPath("$.contactNumber").value("already exists"));
+
+    }
+
+    @Test
     public void updateUser_ReturnsHTTP401Unauthorized_WithNoAuthentication() throws Exception {
         mockMvc.perform(put("/users/aqrar"))
                 .andExpect(status().isUnauthorized());

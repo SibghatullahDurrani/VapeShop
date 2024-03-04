@@ -6,6 +6,7 @@ import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.services.user.AdminUserServices;
 import com.sibghat.vape_shop.services.user.IAdminUserServices;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,7 +25,7 @@ public class AdminUserController implements IAdminUserController {
     }
 
     @Override
-    public ResponseEntity<GetUserDto> addAdmin(@RequestBody AddUserDto adminToAdd, Authentication authentication){
+    public ResponseEntity<GetUserDto> addAdmin(@Valid @RequestBody AddUserDto adminToAdd, Authentication authentication){
         return adminUserServices.addAdmin(adminToAdd,authentication.getName());
     }
 

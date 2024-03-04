@@ -211,8 +211,18 @@ public class UserControllerIntegrationTests {
     void verifyUser_ReturnsHTTP200Ok_WithCorrectVerificationCode() throws Exception {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         ResponseEntity<GetUserDto> user = userServices.addUser(userToAdd);
-        mockMvc.perform(patch("/users/verify/"+ Objects.requireNonNull(user.getBody()).getVerificationCode())
+        mockMvc.perform(patch("/users/verify/"+ Objects
+                .requireNonNull(user.getBody()).getVerificationCode())
         ).andExpect(status().isOk());
+    }
+
+    @Test
+    public void verifyUser_ReturnsHTTP404NotFound_WithIncorrectVerificationCode() throws Exception {
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        ResponseEntity<GetUserDto> user = userServices.addUser(userToAdd);
+        mockMvc.perform(patch("/users/verify/"+ "Xyz")
+        ).andExpect(status().isNotFound());
+
     }
 
     @Test

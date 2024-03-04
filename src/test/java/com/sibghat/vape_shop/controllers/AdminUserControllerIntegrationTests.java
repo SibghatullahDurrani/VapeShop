@@ -5,6 +5,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.sibghat.vape_shop.TestDataUtil;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.services.user.IAdminUserServices;
+import com.sibghat.vape_shop.services.user.IUserServices;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +33,18 @@ public class AdminUserControllerIntegrationTests {
 
     private final MockMvc mockMvc;
     private final IAdminUserServices adminUserServices;
+    private final IUserServices userServices;
     private final ObjectMapper objectMapper;
     private final TestDataUtil testDataUtil = new TestDataUtil();
 
     @Autowired
     public AdminUserControllerIntegrationTests(
             MockMvc mockMvc,
-            IAdminUserServices adminUserServices) {
+            IAdminUserServices adminUserServices,
+            IUserServices userServices) {
         this.mockMvc = mockMvc;
         this.adminUserServices = adminUserServices;
+        this.userServices = userServices;
         this.objectMapper = new ObjectMapper();
     }
 
@@ -426,5 +430,165 @@ public class AdminUserControllerIntegrationTests {
                 .param("username","s")
         ).andExpect(status().isBadRequest());
 
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "USER")
+    public void getAlLAdmins_Return403Forbidden_WithUserRole() throws Exception{
+        mockMvc.perform(get("/users/admins")
+                .param("page","0")
+                .param("size","1")
+                .param("username","s")
+        ).andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void getAlLAdmins_Return401Unauthorized_WithNoAuthentication() throws Exception{
+        mockMvc.perform(get("/users/admins")
+                .param("page","0")
+                .param("size","1")
+                .param("username","s")
+        ).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllUsers_Return200OKAndCorrectData_WithValidParamsAndNoUsernameSearch() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        AddUserDto userToAdd2 = testDataUtil.addUserDto2();
+        AddUserDto userToAdd3 = testDataUtil.addUserDto3();
+        userServices.addUser(userToAdd);
+        userServices.addUser(userToAdd2);
+        userServices.addUser(userToAdd3);
+
+        MvcResult result = mockMvc.perform(get("/users")
+                .param("page","0")
+                .param("size","5")
+                .param("username","")
+        ).andExpect(status().isOk()
+        ).andReturn();
+
+        List<String> contentJson = JsonPath.read(result.getResponse().getContentAsString(),"$.content");
+        assertThat(contentJson).hasSize(3);
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllUsers_Return200OKAndCorrectData_WithValidParamsAndUsernameSearch() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        AddUserDto userToAdd2 = testDataUtil.addUserDto2();
+        AddUserDto userToAdd3 = testDataUtil.addUserDto3();
+        userServices.addUser(userToAdd);
+        userServices.addUser(userToAdd2);
+        userServices.addUser(userToAdd3);
+
+        MvcResult result = mockMvc.perform(get("/users")
+                .param("page","0")
+                .param("size","5")
+                .param("username","s")
+        ).andExpect(status().isOk()
+        ).andReturn();
+
+        List<String> contentJson = JsonPath.read(result.getResponse().getContentAsString(),"$.content");
+        assertThat(contentJson).hasSize(2);
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllUsers_Return400BadRequest_WithNoPageParam() throws Exception{
+        mockMvc.perform(get("/users")
+                .param("size","5")
+                .param("username","s")
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.page").value("parameter required"));
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllUsers_Return400BadRequest_WithNoSizeParam() throws Exception{
+        mockMvc.perform(get("/users")
+                .param("page","5")
+                .param("username","s")
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.size").value("parameter required"));
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllUsers_Return400BadRequest_WithNoUsernameParam() throws Exception{
+        mockMvc.perform(get("/users")
+                .param("page","5")
+                .param("size","5")
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.username").value("parameter required"));
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllUsers_Return400BadRequest_WithPageLessThanZero() throws Exception{
+
+        mockMvc.perform(get("/users")
+                .param("page","-1")
+                .param("size","5")
+                .param("username","s")
+        ).andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllUsers_Return400BadRequest_WithSizeLessThan1() throws Exception{
+
+        mockMvc.perform(get("/users")
+                .param("page","0")
+                .param("size","0")
+                .param("username","s")
+        ).andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllUsers_Return400BadRequest_WithSizeNonInteger() throws Exception{
+
+        mockMvc.perform(get("/users")
+                .param("page","0")
+                .param("size","s")
+                .param("username","s")
+        ).andExpect(status().isBadRequest());
+
+    }
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllUsers_Return400BadRequest_WithPageNonInteger() throws Exception{
+
+        mockMvc.perform(get("/users")
+                .param("page","s")
+                .param("size","1")
+                .param("username","s")
+        ).andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "USER")
+    public void getAllUsers_Return403Forbidden_WithUserRole() throws Exception{
+        mockMvc.perform(get("/users")
+                .param("page","0")
+                .param("size","1")
+                .param("username","s")
+        ).andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void getAllUsers_Return401Unauthorized_WithNoAuthentication() throws Exception{
+        mockMvc.perform(get("/users")
+                .param("page","0")
+                .param("size","1")
+                .param("username","s")
+        ).andExpect(status().isUnauthorized());
     }
 }

@@ -180,6 +180,80 @@ public class AdminUserControllerIntegrationTests {
     }
 
     @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void addAdmin_Returns409Conflict_WithAllDetailsThatAlreadyExists() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        adminUserServices.addAdmin(userToAdd, userToAdd.getUsername());
+
+        String userToAddJson = objectMapper.writeValueAsString(userToAdd);
+
+        mockMvc.perform(post("/users/admins")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userToAddJson)
+        ).andExpect(status().isConflict()
+        ).andExpect(jsonPath("$.username").value("already exists")
+        ).andExpect(jsonPath("$.email").value("already exists")
+        ).andExpect(jsonPath("$.contactNumber").value("already exists"));
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void addAdmin_Returns409Conflict_WithUsernameThatAlreadyExists() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+
+        adminUserServices.addAdmin(userToAdd, userToAdd.getUsername());
+
+        userToAdd.setContactNumber("123541348976123");
+        userToAdd.setEmail("sdhfbvkjahsdv@gmail.com");
+
+        String userToAddJson = objectMapper.writeValueAsString(userToAdd);
+
+        mockMvc.perform(post("/users/admins")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userToAddJson)
+        ).andExpect(status().isConflict()
+        ).andExpect(jsonPath("$.username").value("already exists"));
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void addAdmin_Returns409Conflict_WithEmailThatAlreadyExists() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+
+        adminUserServices.addAdmin(userToAdd, userToAdd.getUsername());
+
+        userToAdd.setContactNumber("123541348976123");
+        userToAdd.setUsername("sdhfbvkjahsdv");
+
+        String userToAddJson = objectMapper.writeValueAsString(userToAdd);
+
+        mockMvc.perform(post("/users/admins")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userToAddJson)
+        ).andExpect(status().isConflict()
+        ).andExpect(jsonPath("$.email").value("already exists"));
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void addAdmin_Returns409Conflict_WithContactNumberThatAlreadyExists() throws Exception{
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+
+        adminUserServices.addAdmin(userToAdd, userToAdd.getUsername());
+
+        userToAdd.setEmail("asdfadsfgas@gmail.com");
+        userToAdd.setUsername("sdhfbvkjahsdv");
+
+        String userToAddJson = objectMapper.writeValueAsString(userToAdd);
+
+        mockMvc.perform(post("/users/admins")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userToAddJson)
+        ).andExpect(status().isConflict()
+        ).andExpect(jsonPath("$.contactNumber").value("already exists"));
+    }
+
+    @Test
     public void addAdmin_Returns401Unauthorized_WithNoAuthentication() throws Exception {
         mockMvc.perform(post("/users/admins"))
                 .andExpect(status().isUnauthorized());
@@ -226,6 +300,14 @@ public class AdminUserControllerIntegrationTests {
         mockMvc.perform(get("/users/admins/xyz")
         ).andExpect(status().isUnauthorized());
     }
+
+//    @Test
+//    @WithMockUser(username = "aqrar",roles = "ADMIN")
+//    public void getAllAdmins_Return200OKAndCorrectData_WithValidParamsAndNoUsername() throws Exception{
+//        AddUserDto userToAdd = testDataUtil.addUserDto1();
+//        AddUserDto userToAdd2 = testDataUtil.addUserDto2();
+//        adminUserServices.addAdmin(userToAdd, userToAdd.getUsername());
+//    }
 
 
 

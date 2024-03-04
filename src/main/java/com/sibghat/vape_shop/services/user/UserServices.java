@@ -82,7 +82,6 @@ public class UserServices implements IUserServices {
 
     @Override
     public ResponseEntity<GetUserDto> updateUser(String username, UpdateUserDto userToUpdateDto) {
-//        User userToUpdate = updateUserDtoToUserMapper.mapFrom(userToUpdateDto);
         Optional<User> userToUpdate = userRepository.findUserByUsername(username);
         if(userToUpdate.isPresent()){
             userToUpdate.get().setFirstName(userToUpdateDto.getFirstName());

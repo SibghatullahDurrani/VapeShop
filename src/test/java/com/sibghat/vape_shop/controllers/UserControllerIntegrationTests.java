@@ -1,9 +1,11 @@
 package com.sibghat.vape_shop.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sibghat.vape_shop.TestDataUtil;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
+import com.sibghat.vape_shop.dtos.user.UpdatePasswordDto;
 import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
 import com.sibghat.vape_shop.services.user.IUserServices;
 import org.junit.jupiter.api.Test;
@@ -384,5 +386,25 @@ public class UserControllerIntegrationTests {
                         .content(updatedUserDataJson))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "USER")
+    public void updatePassword_ReturnsHTTP200OK_WithValidUsernameAndPassword() throws Exception {
+        AddUserDto addUserDto = testDataUtil.addUserDto1();
+        userServices.addUser(addUserDto);
+
+        UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder()
+                .previousPassword(addUserDto.getPassword())
+                .newPassword("updated")
+                .build();
+
+        String updatePasswordDtoJson = objectMapper.writeValueAsString(updatePasswordDto);
+
+        mockMvc.perform(patch("/users/" + addUserDto.getUsername())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatePasswordDtoJson)
+        ).andExpect(status().isOk());
+
+    }//TODO: add additional unit tests and integration tests of this functionality
 
 }

@@ -1,10 +1,7 @@
 package com.sibghat.vape_shop.services.user;
 
 import com.sibghat.vape_shop.domains.User;
-import com.sibghat.vape_shop.dtos.user.AddUserDto;
-import com.sibghat.vape_shop.dtos.user.GetUserDto;
-import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
-import com.sibghat.vape_shop.dtos.user.VerifyUserDto;
+import com.sibghat.vape_shop.dtos.user.*;
 import com.sibghat.vape_shop.mappers.user.AddUserDtoToUserMapper;
 import com.sibghat.vape_shop.mappers.user.UserToGetUserDtoMapper;
 import com.sibghat.vape_shop.repositories.UserRepository;
@@ -72,6 +69,25 @@ public class UserServices implements IUserServices {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @Override
+    public ResponseEntity<HttpStatus> updatePassword(String username, UpdatePasswordDto updatePasswordDto) {
+        Optional<String> previousEncodedPassword = userRepository.getPassword(username);
+        if(previousEncodedPassword.isPresent()){
+            if(passwordEncoder.matches(
+                    updatePasswordDto.getPreviousPassword(),
+                    previousEncodedPassword.get()
+            )){
+                userRepository.updatePassword(updatePasswordDto.getNewPassword(),username);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        }else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 
     @Override
     public ResponseEntity<GetUserDto> getUser(String username) {

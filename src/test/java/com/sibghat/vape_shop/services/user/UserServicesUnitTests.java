@@ -3,10 +3,7 @@ package com.sibghat.vape_shop.services.user;
 import com.sibghat.vape_shop.TestDataUtil;
 import com.sibghat.vape_shop.TestUtilMappers;
 import com.sibghat.vape_shop.domains.User;
-import com.sibghat.vape_shop.dtos.user.AddUserDto;
-import com.sibghat.vape_shop.dtos.user.GetUserDto;
-import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
-import com.sibghat.vape_shop.dtos.user.VerifyUserDto;
+import com.sibghat.vape_shop.dtos.user.*;
 import com.sibghat.vape_shop.mappers.user.AddUserDtoToUserMapper;
 import com.sibghat.vape_shop.mappers.user.UserToGetUserDtoMapper;
 import com.sibghat.vape_shop.repositories.UserRepository;
@@ -197,6 +194,28 @@ public class UserServicesUnitTests {
         ResponseEntity<GetUserDto> result = underTest.updateUser(username,updateUserDto);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void updatePassword_ReturnsHTTP200OK_WithValidUsernameAndPassword(){
+        String username = "xyz";
+        String password = "abc";
+
+        UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder()
+                .previousPassword("abc")
+                .newPassword("asdf")
+                .build();
+
+        when(userRepository.getPassword(username))
+                .thenReturn(Optional.of(password));
+
+        when(passwordEncoder.matches(updatePasswordDto.getPreviousPassword(), password))
+                .thenReturn(true);
+
+        ResponseEntity<HttpStatus> result = underTest.updatePassword(username,updatePasswordDto);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+
     }
 
 

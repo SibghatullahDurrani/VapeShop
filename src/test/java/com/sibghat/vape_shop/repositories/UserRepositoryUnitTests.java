@@ -209,6 +209,35 @@ public class UserRepositoryUnitTests {
 
     }
 
+    @Test
+    public void updatePassword_UpdatesPassword_WithValidUsername(){
+        User user = testDataUtil.validUser1();
+        userRepository.save(user);
+
+        String updatedPassword = "updated";
+
+        userRepository.updatePassword(updatedPassword,user.getUsername());
+
+        entityManager.clear();
+
+        Optional<User> updatedUser = userRepository.findUserByUsername(user.getUsername());
+
+        assertThat(updatedUser).isPresent();
+        assertThat(updatedUser.get().getUsername()).isEqualTo(user.getUsername());
+        assertThat(updatedUser.get().getPassword()).isEqualTo(updatedPassword);
+    }
+
+    @Test
+    public void getPassword_ReturnsPassword_WithValidUsername(){
+        User user = testDataUtil.validUser1();
+        userRepository.save(user);
+
+        Optional<String> password = userRepository.getPassword(user.getUsername());
+
+        assertThat(password).isPresent();
+        assertThat(password.get()).isEqualTo(user.getPassword());
+    }
+
 
 
 }

@@ -2,6 +2,7 @@ package com.sibghat.vape_shop.controllers.interfaces;
 
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
+import com.sibghat.vape_shop.dtos.user.UpdatePasswordDto;
 import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,16 @@ public interface IUserController {
     ResponseEntity<GetUserDto> updateUser(
             @PathVariable String username,
             @Valid @RequestBody UpdateUserDto userToUpdate
+    );
+
+    @PatchMapping("/users/{username}")
+    @PreAuthorize("""
+    #username == authentication.name and
+    hasRole("USER")
+""")
+    ResponseEntity<HttpStatus> updatePassword(
+      @PathVariable String username,
+      @Valid @RequestBody UpdatePasswordDto updatePasswordDto
     );
 
 

@@ -3,6 +3,7 @@ package com.sibghat.vape_shop.controllers;
 import com.sibghat.vape_shop.controllers.interfaces.IUserController;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
+import com.sibghat.vape_shop.dtos.user.UpdatePasswordDto;
 import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
 import com.sibghat.vape_shop.services.user.IUserServices;
 import com.sibghat.vape_shop.services.user.UserServices;
@@ -44,5 +45,13 @@ public class UserController implements IUserController {
             @Valid @RequestBody UpdateUserDto userToUpdate
     ){
         return userServices.updateUser(username, userToUpdate);
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> updatePassword(
+            @PathVariable String username,
+            @Valid @RequestBody UpdatePasswordDto updatePasswordDto
+    ) {
+        return null;
     }
 }

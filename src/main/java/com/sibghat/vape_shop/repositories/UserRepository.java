@@ -76,5 +76,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
 """)
     Page<GetUserByAdminDto> getUsersBySearch(String username, String role,Pageable pageable);
 
+    @Query("""
+    UPDATE User u set u.password = ?1 WHERE u.username = ?2
+""")
+    @Modifying
+    @Transactional
+    void updatePassword(String password,String username);
+
+    @Query("""
+    SELECT u.password FROM User u WHERE u.username = ?1
+""")
+    Optional<String> getPassword(String username);
+
 
 }

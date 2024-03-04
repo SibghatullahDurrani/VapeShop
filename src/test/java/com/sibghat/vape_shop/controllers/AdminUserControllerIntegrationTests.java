@@ -347,4 +347,84 @@ public class AdminUserControllerIntegrationTests {
         List<String> contentJson = JsonPath.read(result.getResponse().getContentAsString(),"$.content");
         assertThat(contentJson).hasSize(2);
     }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllAdmins_Return400BadRequest_WithNoPageParam() throws Exception{
+        mockMvc.perform(get("/users/admins")
+                .param("size","5")
+                .param("username","s")
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.page").value("parameter required"));
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllAdmins_Return400BadRequest_WithNoSizeParam() throws Exception{
+        mockMvc.perform(get("/users/admins")
+                .param("page","5")
+                .param("username","s")
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.size").value("parameter required"));
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllAdmins_Return400BadRequest_WithNoUsernameParam() throws Exception{
+        mockMvc.perform(get("/users/admins")
+                .param("page","5")
+                .param("size","5")
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.username").value("parameter required"));
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllAdmins_Return400BadRequest_WithPageLessThanZero() throws Exception{
+
+        mockMvc.perform(get("/users/admins")
+                .param("page","-1")
+                .param("size","5")
+                .param("username","s")
+        ).andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllAdmins_Return400BadRequest_WithSizeLessThan1() throws Exception{
+
+        mockMvc.perform(get("/users/admins")
+                .param("page","0")
+                .param("size","0")
+                .param("username","s")
+        ).andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllAdmins_Return400BadRequest_WithSizeNonInteger() throws Exception{
+
+        mockMvc.perform(get("/users/admins")
+                .param("page","0")
+                .param("size","s")
+                .param("username","s")
+        ).andExpect(status().isBadRequest());
+
+    }
+    @Test
+    @WithMockUser(username = "aqrar",roles = "ADMIN")
+    public void getAllAdmins_Return400BadRequest_WithPageNonInteger() throws Exception{
+
+        mockMvc.perform(get("/users/admins")
+                .param("page","s")
+                .param("size","1")
+                .param("username","s")
+        ).andExpect(status().isBadRequest());
+
+    }
 }

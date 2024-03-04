@@ -45,4 +45,12 @@ public class ControllerExceptionHandler {
         errors.put(parameterName,"parameter required");
         return new ResponseEntity<>(errors,HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException exp){
+        var errors = new HashMap<String,String>();
+        String message = exp.getMessage();
+        errors.put("message", message);
+        return new ResponseEntity<>(errors,HttpStatus.BAD_REQUEST);
+    }
 }

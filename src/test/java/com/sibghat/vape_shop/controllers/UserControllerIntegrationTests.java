@@ -5,6 +5,7 @@ import com.sibghat.vape_shop.TestDataUtil;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.services.user.IUserServices;
+import lombok.With;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -222,7 +223,6 @@ public class UserControllerIntegrationTests {
         ResponseEntity<GetUserDto> user = userServices.addUser(userToAdd);
         mockMvc.perform(patch("/users/verify/"+ "Xyz")
         ).andExpect(status().isNotFound());
-
     }
 
     @Test
@@ -239,6 +239,21 @@ public class UserControllerIntegrationTests {
     void getUser_ReturnsHTTP403Forbidden_WithIncorrectRole() throws Exception {
         mockMvc.perform(get("/users/aqrar"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "xyz", roles = "USER")
+    public void getUser_Returns403Forbidden_WhenAccessingUserInformationThatIsNotTheirs() throws Exception {
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        userServices.addUser(userToAdd);
+        mockMvc.perform(get("/users/aqrar"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void getUser_ReturnsHTTP401Unauthorized_WithNoAuthentication() throws Exception {
+        mockMvc.perform(get("/users/aqrar"))
+                .andExpect(status().isUnauthorized());
     }
 
 }

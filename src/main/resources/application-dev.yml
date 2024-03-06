@@ -23,3 +23,4 @@ server:
   port: 3000
 
 jwksUri: http://localhost:8080/oauth2/jwks
+emailVerificationURL: localhost:3000/users/verify/

@@ -6,6 +6,7 @@ import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.services.user.AdminServices;
 import com.sibghat.vape_shop.services.user.interfaces.IAdminServices;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.UnsupportedEncodingException;
 
 @RestController
 public class AdminController implements IAdminController {
@@ -25,7 +28,7 @@ public class AdminController implements IAdminController {
     }
 
     @Override
-    public ResponseEntity<GetUserDto> addAdmin(@Valid @RequestBody AddUserDto adminToAdd, Authentication a){
+    public ResponseEntity<GetUserDto> addAdmin(@Valid @RequestBody AddUserDto adminToAdd, Authentication a) throws MessagingException, UnsupportedEncodingException {
         return adminUserServices.addUser(adminToAdd,a.getName());
     }
 

@@ -7,6 +7,7 @@ import com.sibghat.vape_shop.dtos.user.UpdatePasswordDto;
 import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
 import com.sibghat.vape_shop.services.user.interfaces.IClientServices;
 import com.sibghat.vape_shop.services.user.ClientServices;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.UnsupportedEncodingException;
 
 @RestController
 public class ClientController implements IClientController {
@@ -26,7 +29,7 @@ public class ClientController implements IClientController {
 
 
     @Override
-    public ResponseEntity<GetUserDto> addUser(AddUserDto userToAdd) {
+    public ResponseEntity<GetUserDto> addUser(AddUserDto userToAdd) throws MessagingException, UnsupportedEncodingException {
         String username = userToAdd.getUsername();
         return userServices.addUser(userToAdd,username);
     }

@@ -198,7 +198,7 @@ public class ClientControllerIntegrationTests {
     }
 
     @Test
-    void addUserReturnsHTTP409Conflict_WithEveryUniqueFieldThatAlreadyExists() throws Exception{
+    void addUser_ReturnsHTTP409Conflict_WithEveryUniqueFieldThatAlreadyExists() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         userServices.addUser(userToAdd,userToAdd.getUsername());
         String userJson = objectMapper.writeValueAsString(userToAdd);

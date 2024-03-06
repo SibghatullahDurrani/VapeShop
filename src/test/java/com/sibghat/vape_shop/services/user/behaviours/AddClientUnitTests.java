@@ -10,6 +10,8 @@ import com.sibghat.vape_shop.mappers.user.UserToGetUserDtoMapper;
 import com.sibghat.vape_shop.repositories.UserRepository;
 import com.sibghat.vape_shop.services.conditionEvaluators.IUserRelatedConditionEvaluators;
 import com.sibghat.vape_shop.services.conditionEvaluators.UserRelatedConditionEvaluators;
+import com.sibghat.vape_shop.services.user.behaviours.interfaces.ISendVerificationEmailBehaviour;
+import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.io.UnsupportedEncodingException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -34,6 +38,8 @@ class AddClientUnitTests {
     private PasswordEncoder passwordEncoder;
     @Mock
     private UserRelatedConditionEvaluators userRelatedConditionEvaluators;
+    @Mock
+    private ISendVerificationEmailBehaviour sendVerificationEmailBehaviour;
     private final TestDataUtil testDataUtil = new TestDataUtil();
     private final TestUtilMappers testUtilMappers = new TestUtilMappers();
 
@@ -41,7 +47,7 @@ class AddClientUnitTests {
     private AddClient underTest;
 
     @Test
-    public void add_ReturnsHTTP201CreatedOkAndValidBody_WithValidData(){
+    public void add_ReturnsHTTP201CreatedOkAndValidBody_WithValidData() throws MessagingException, UnsupportedEncodingException {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         User mappedUser = testUtilMappers.addUserDtoToUserMapper(userToAdd);
         GetUserDto mappedUserDto = testUtilMappers.userToGetUserDtoMapper(mappedUser);

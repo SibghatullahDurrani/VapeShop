@@ -15,7 +15,6 @@ public class AdminServices extends UserServices implements IAdminServices {
 
     public AdminServices(
             final AddAdmin addAdmin,
-            final VerifyUser verifyUser,
             final GetUser getUser,
             final UpdateUser updateUser,
             final UpdatePassword updatePassword,
@@ -23,7 +22,6 @@ public class AdminServices extends UserServices implements IAdminServices {
     ) {
         super(
                 addAdmin,
-                verifyUser,
                 getUser,
                 updateUser,
                 updatePassword

@@ -238,6 +238,25 @@ public class UserRepositoryUnitTests {
         assertThat(password.get()).isEqualTo(user.getPassword());
     }
 
+    @Test
+    public void deleteVerificationCode_DeletesVerificationCode(){
+        User user = testDataUtil.validUser1();
+        user.setVerificationCode("xyz");
+        user.setVerificationCodeValidTill(123L);
+        userRepository.save(user);
+
+        userRepository.deleteVerificationCode(user.getUsername());
+
+        entityManager.clear();
+
+        Optional<User> updatedUser = userRepository.findUserByUsername(user.getUsername());
+
+        assertThat(updatedUser).isPresent();
+        assertThat(updatedUser.get().getUsername()).isEqualTo(user.getUsername());
+        assertThat(updatedUser.get().getVerificationCode()).isNull();
+        assertThat(updatedUser.get().getVerificationCodeValidTill()).isNull();
+    }
+
 
 
 }

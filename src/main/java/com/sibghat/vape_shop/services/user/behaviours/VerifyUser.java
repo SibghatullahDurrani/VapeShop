@@ -26,6 +26,7 @@ public class VerifyUser implements IVerifyUserBehaviour {
                 userRepository.enableUser(user.get().getUsername());
                 return new ResponseEntity<>(HttpStatus.OK);
             }else{
+                userRepository.deleteVerificationCode(user.get().getUsername());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }else{

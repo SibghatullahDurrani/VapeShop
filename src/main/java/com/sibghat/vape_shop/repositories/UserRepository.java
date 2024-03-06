@@ -89,4 +89,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<String> getPassword(String username);
 
 
+    @Query("""
+    UPDATE User u set u.verificationCode = null, u.verificationCodeValidTill = null
+    WHERE u.username = ?1
+""")
+    @Modifying
+    @Transactional
+    void deleteVerificationCode(String username);
 }

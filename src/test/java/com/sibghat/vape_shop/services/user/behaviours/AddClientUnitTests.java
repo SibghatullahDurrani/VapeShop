@@ -9,6 +9,7 @@ import com.sibghat.vape_shop.mappers.user.AddUserDtoToUserMapper;
 import com.sibghat.vape_shop.mappers.user.UserToGetUserDtoMapper;
 import com.sibghat.vape_shop.repositories.UserRepository;
 import com.sibghat.vape_shop.services.conditionEvaluators.IUserRelatedConditionEvaluators;
+import com.sibghat.vape_shop.services.conditionEvaluators.UserRelatedConditionEvaluators;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class AddAdminUnitTests {
+class AddClientUnitTests {
 
     @Mock
     private UserRepository userRepository;
@@ -32,17 +33,16 @@ class AddAdminUnitTests {
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
-    private IUserRelatedConditionEvaluators userRelatedConditionEvaluators;
+    private UserRelatedConditionEvaluators userRelatedConditionEvaluators;
     private final TestDataUtil testDataUtil = new TestDataUtil();
     private final TestUtilMappers testUtilMappers = new TestUtilMappers();
 
     @InjectMocks
-    private AddAdmin underTest;
+    private AddClient underTest;
 
     @Test
     public void add_ReturnsHTTP201CreatedOkAndValidBody_WithValidData(){
         AddUserDto userToAdd = testDataUtil.addUserDto1();
-        String createdBy = userToAdd.getUsername();
         User mappedUser = testUtilMappers.addUserDtoToUserMapper(userToAdd);
         GetUserDto mappedUserDto = testUtilMappers.userToGetUserDtoMapper(mappedUser);
 
@@ -53,8 +53,6 @@ class AddAdminUnitTests {
         when(passwordEncoder.encode(mappedUser.getPassword()))
                 .thenReturn(mappedUser.getPassword());
 
-        mappedUser.setCreatedBy(createdBy);
-        mappedUser.setRole("ROLE_ADMIN");
 
         when(userRepository.save(mappedUser))
                 .thenReturn(mappedUser);
@@ -68,6 +66,5 @@ class AddAdminUnitTests {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(result.getBody()).isEqualTo(mappedUserDto);
     }
-
 
 }

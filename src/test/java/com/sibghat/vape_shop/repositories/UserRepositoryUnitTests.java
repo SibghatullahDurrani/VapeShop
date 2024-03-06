@@ -164,7 +164,7 @@ public class UserRepositoryUnitTests {
         userRepository.save(user3);
 
         PageRequest pageRequest = PageRequest.of(0,5);
-        Page<GetUserByAdminDto> result = userRepository.getAllUsers("ROLE_USER",pageRequest);
+        Page<GetUserByAdminDto> result = userRepository.getAllUsers("ROLE_CLIENT",pageRequest);
 
         assertThat(result.stream().toList()).hasSize(1);
     }
@@ -203,7 +203,7 @@ public class UserRepositoryUnitTests {
 
         PageRequest pageRequest = PageRequest.of(0,5);
         Page<GetUserByAdminDto> result =
-                userRepository.getUsersBySearch("i","ROLE_USER",pageRequest);
+                userRepository.getUsersBySearch("i","ROLE_CLIENT",pageRequest);
 
         assertThat(result.stream().toList()).hasSize(1);
 

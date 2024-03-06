@@ -59,4 +59,9 @@ public class ClientController implements IClientController {
     ) {
         return clientServices.updatePassword(username,updatePasswordDto);
     }
+
+    @Override
+    public ResponseEntity<HttpStatus> disableClient(@PathVariable String username){
+        return clientServices.disableUser(username);
+    }
 }

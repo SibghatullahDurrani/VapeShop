@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -255,6 +256,24 @@ public class UserRepositoryUnitTests {
         assertThat(updatedUser.get().getUsername()).isEqualTo(user.getUsername());
         assertThat(updatedUser.get().getVerificationCode()).isNull();
         assertThat(updatedUser.get().getVerificationCodeValidTill()).isNull();
+    }
+
+    @Test
+    public void disableUser_DisablesTheUser(){
+        User user = testDataUtil.validUser1();
+        user.setEnabled(true);
+        userRepository.save(user);
+
+        userRepository.disableUser(user.getUsername(), LocalDateTime.now());
+
+        entityManager.clear();
+
+        Optional<User> updatedUser = userRepository.findUserByUsername(user.getUsername());
+
+        assertThat(updatedUser).isPresent();
+        assertThat(updatedUser.get().getUsername()).isEqualTo(user.getUsername());
+        assertThat(updatedUser.get().isEnabled()).isFalse();
+        assertThat(updatedUser.get().getLastModifiedBy()).isEqualTo(user.getUsername());
     }
 
 

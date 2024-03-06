@@ -22,4 +22,5 @@ public interface IClientServices {
     ResponseEntity<HttpStatus> verifyUser(String verificationCode);
 
     ResponseEntity<HttpStatus> updatePassword(String username, UpdatePasswordDto updatePasswordDto);
+    ResponseEntity<HttpStatus> disableUser(String username);
 }

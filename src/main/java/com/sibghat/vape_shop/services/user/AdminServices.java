@@ -18,13 +18,15 @@ public class AdminServices extends UserServices implements IAdminServices {
             final GetUser getUser,
             final UpdateUser updateUser,
             final UpdatePassword updatePassword,
+            final DisableUser disableUser,
             IGetAllUsersBehaviour getAllUsersBehaviour
     ) {
         super(
                 addAdmin,
                 getUser,
                 updateUser,
-                updatePassword
+                updatePassword,
+                disableUser
         );
 
         this.getAllUsersBehaviour = getAllUsersBehaviour;

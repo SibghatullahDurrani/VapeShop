@@ -16,5 +16,6 @@ public interface IAdminServices {
     ResponseEntity<GetUserDto> updateUser(String username, UpdateUserDto userToUpdate);
     ResponseEntity<HttpStatus> updatePassword(String username, UpdatePasswordDto updatePasswordDto);
     ResponseEntity<Page<GetUserByAdminDto>> getAllUsers(int page, int size, String role, String username);
+    ResponseEntity<HttpStatus> disableUser(String username);
 
 }

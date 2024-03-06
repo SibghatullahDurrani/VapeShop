@@ -506,7 +506,7 @@ public class ClientControllerIntegrationTests {
     }
 
     @Test
-    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
     public void updatePassword_ReturnsHTTP400BadRequest_WithInvalidRequiredFields() throws Exception{
         User userToAdd = testDataUtil.validUser1();
         userRepository.save(userToAdd);
@@ -521,5 +521,36 @@ public class ClientControllerIntegrationTests {
         ).andExpect(status().isBadRequest()
         ).andExpect(jsonPath("$.previousPassword").value("must not be blank")
         ).andExpect(jsonPath("$.newPassword").value("must not be blank"));
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
+    public void disableClient_Returns204NoContent_WithValidUsername() throws Exception{
+        User userToAdd = testDataUtil.validUser1();
+        userRepository.save(userToAdd);
+
+        mockMvc.perform(delete("/users/" + userToAdd.getUsername())
+        ).andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
+    public void disableClient_Returns404NotFound_WithInValidUsername() throws Exception{
+        mockMvc.perform(delete("/users/aqrar")
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
+    public void disableClient_Returns403Forbidden_WithUsernameThatIsNotTheirs() throws Exception{
+        mockMvc.perform(delete("/users/xyz")
+        ).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    public void disableClient_Returns403Forbidden_WithIncorrectRole() throws Exception{
+        mockMvc.perform(delete("/users/aqrar")
+        ).andExpect(status().isForbidden());
     }
 }

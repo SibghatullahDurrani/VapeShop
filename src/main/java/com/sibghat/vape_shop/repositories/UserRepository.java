@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -96,4 +97,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Transactional
     void deleteVerificationCode(String username);
+
+    @Query("""
+    UPDATE User u set
+    u.enabled = false, u.lastModifiedBy = ?1, u.lastModifiedAt = ?2
+    WHERE u.username = ?1
+""")
+    @Modifying
+    @Transactional
+    void disableUser(String username, LocalDateTime lastModifiedAt);
 }

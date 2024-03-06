@@ -56,6 +56,13 @@ public interface IClientController {
       @Valid @RequestBody UpdatePasswordDto updatePasswordDto
     );
 
+    @DeleteMapping("/users/{username}")
+    @PreAuthorize("""
+    #username == authentication.name and
+    hasRole("CLIENT")
+""")
+    ResponseEntity<HttpStatus> disableClient(@PathVariable String username);
+
 
 
 }

@@ -17,17 +17,19 @@ public abstract class UserServices {
     private final IGetUserBehaviour getUserBehaviour;
     private final IUpdateUserBehaviour updateUserBehaviour;
     private final IUpdatePasswordBehaviour updatePasswordBehaviour;
+    private final IDisableUserBehaviour disableUserBehaviour;
 
     protected UserServices(
             IAddBehaviour addBehaviour,
             IGetUserBehaviour getUserBehaviour,
             IUpdateUserBehaviour updateUserBehaviour,
-            IUpdatePasswordBehaviour updatePasswordBehaviour
+            IUpdatePasswordBehaviour updatePasswordBehaviour, IDisableUserBehaviour disableUserBehaviour
     ) {
         this.addBehaviour = addBehaviour;
         this.getUserBehaviour = getUserBehaviour;
         this.updateUserBehaviour = updateUserBehaviour;
         this.updatePasswordBehaviour = updatePasswordBehaviour;
+        this.disableUserBehaviour = disableUserBehaviour;
     }
 
     public ResponseEntity<GetUserDto> addUser(AddUserDto userToAdd, String createdBy) throws MessagingException, UnsupportedEncodingException {
@@ -44,6 +46,9 @@ public abstract class UserServices {
 
     public ResponseEntity<HttpStatus> updatePassword(String username, UpdatePasswordDto updatePasswordDto){
         return updatePasswordBehaviour.updatePassword(username,updatePasswordDto);
+    }
+    public ResponseEntity<HttpStatus> disableUser(String username){
+        return disableUserBehaviour.disableUser(username);
     }
 
 }

@@ -17,13 +17,15 @@ public class ClientServices extends UserServices implements IClientServices {
             final GetUser getUser,
             final UpdateUser updateUser,
             final UpdatePassword updatePassword,
+            final DisableUser disableUser,
             IVerifyUserBehaviour verifyUserBehaviour
     ) {
         super(
                 addClient,
                 getUser,
                 updateUser,
-                updatePassword
+                updatePassword,
+                disableUser
         );
         this.verifyUserBehaviour = verifyUserBehaviour;
 

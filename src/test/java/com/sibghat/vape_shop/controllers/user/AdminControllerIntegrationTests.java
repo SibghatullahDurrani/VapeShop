@@ -5,6 +5,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.sibghat.vape_shop.TestDataUtil;
 import com.sibghat.vape_shop.domains.User;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
+import com.sibghat.vape_shop.dtos.user.UpdatePasswordDto;
 import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
 import com.sibghat.vape_shop.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -35,16 +37,18 @@ public class AdminControllerIntegrationTests {
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
     private final TestDataUtil testDataUtil = new TestDataUtil();
-    
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public AdminControllerIntegrationTests(
             MockMvc mockMvc,
-            UserRepository userRepository
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder
     ) {
         this.mockMvc = mockMvc;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
         this.objectMapper = new ObjectMapper();
     }
 
@@ -736,5 +740,121 @@ public class AdminControllerIntegrationTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedUserDataJson))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    public void updateAdminPassword_ReturnsHTTP200OK_WithValidUsernameAndPassword() throws Exception {
+        User userToAdd = testDataUtil.validUser1();
+
+        UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder()
+                .previousPassword(userToAdd.getPassword())
+                .newPassword("updated")
+                .build();
+
+        userToAdd.setPassword(passwordEncoder.encode(userToAdd.getPassword()));
+        userRepository.save(userToAdd);
+
+        String updatePasswordDtoJson = objectMapper.writeValueAsString(updatePasswordDto);
+
+        mockMvc.perform(patch("/users/admins/" + userToAdd.getUsername())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatePasswordDtoJson)
+        ).andExpect(status().isOk());
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    public void updateAdminPassword_ReturnsHTTP400BadRequest_WithInvalidPreviousPassword() throws Exception {
+        User userToAdd = testDataUtil.validUser1();
+        userRepository.save(userToAdd);
+
+        UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder()
+                .previousPassword("adsfasdfadsf")
+                .newPassword("updated")
+                .build();
+
+        String updatePasswordDtoJson = objectMapper.writeValueAsString(updatePasswordDto);
+
+        mockMvc.perform(patch("/users/admins/" + userToAdd.getUsername())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatePasswordDtoJson)
+        ).andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    public void updateAdminPassword_ReturnsHTTP401Unauthorized_WithNoAuthentication() throws Exception{
+        User userToAdd = testDataUtil.validUser1();
+        userRepository.save(userToAdd);
+
+        UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder()
+                .previousPassword("xyz")
+                .newPassword("updated")
+                .build();
+
+        String updatePasswordDtoJson = objectMapper.writeValueAsString(updatePasswordDto);
+
+        mockMvc.perform(patch("/users/admins/" + userToAdd.getUsername())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatePasswordDtoJson)
+        ).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "sibghat", roles = "ADMIN")
+    public void updateAdminPassword_ReturnsHTTP403Forbidden_WhenAccessingOtherUsersEndpoint() throws Exception{
+        User userToAdd = testDataUtil.validUser1();
+        userRepository.save(userToAdd);
+
+        UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder()
+                .previousPassword("xyz")
+                .newPassword("updated")
+                .build();
+
+        String updatePasswordDtoJson = objectMapper.writeValueAsString(updatePasswordDto);
+
+        mockMvc.perform(patch("/users/admins/" + userToAdd.getUsername())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatePasswordDtoJson)
+        ).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
+    public void updateAdminPassword_ReturnsHTTP403Forbidden_WithClientRole() throws Exception{
+        User userToAdd = testDataUtil.validUser1();
+        userRepository.save(userToAdd);
+
+        UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder()
+                .previousPassword("xyz")
+                .newPassword("updated")
+                .build();
+
+        String updatePasswordDtoJson = objectMapper.writeValueAsString(updatePasswordDto);
+
+        mockMvc.perform(patch("/users/admins/" + userToAdd.getUsername())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatePasswordDtoJson)
+        ).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    public void updateAdminPassword_ReturnsHTTP400BadRequest_WithInvalidRequiredFields() throws Exception{
+        User userToAdd = testDataUtil.validUser1();
+        userRepository.save(userToAdd);
+
+        UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder().build();
+
+        String updatePasswordDtoJson = objectMapper.writeValueAsString(updatePasswordDto);
+
+        mockMvc.perform(patch("/users/admins/" + userToAdd.getUsername())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatePasswordDtoJson)
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.previousPassword").value("must not be blank")
+        ).andExpect(jsonPath("$.newPassword").value("must not be blank"));
     }
 }

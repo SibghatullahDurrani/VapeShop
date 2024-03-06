@@ -52,6 +52,6 @@ public class UserController implements IUserController {
             @PathVariable String username,
             @Valid @RequestBody UpdatePasswordDto updatePasswordDto
     ) {
-        return null;
+        return userServices.updatePassword(username,updatePasswordDto);
     }
 }

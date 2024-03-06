@@ -377,7 +377,7 @@ public class UserControllerIntegrationTests {
 
     @Test
     @WithMockUser(username = "xyz", roles = "USER")
-    public void Update_Returns403Forbidden_WhenUpdatingUserInformationThatIsNotTheirs() throws Exception {
+    public void updateUser_Returns403Forbidden_WhenUpdatingUserInformationThatIsNotTheirs() throws Exception {
         UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
         String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
 
@@ -405,6 +405,99 @@ public class UserControllerIntegrationTests {
                 .content(updatePasswordDtoJson)
         ).andExpect(status().isOk());
 
-    }//TODO: add additional unit tests and integration tests of this functionality
+    }
 
+    @Test
+    @WithMockUser(username = "aqrar", roles = "USER")
+    public void updatePassword_ReturnsHTTP400BadRequest_WithInvalidPreviousPassword() throws Exception {
+        AddUserDto addUserDto = testDataUtil.addUserDto1();
+        userServices.addUser(addUserDto);
+
+        UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder()
+                .previousPassword("xyz")
+                .newPassword("updated")
+                .build();
+
+        String updatePasswordDtoJson = objectMapper.writeValueAsString(updatePasswordDto);
+
+        mockMvc.perform(patch("/users/" + addUserDto.getUsername())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatePasswordDtoJson)
+        ).andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    public void updatePassword_ReturnsHTTP401Unauthorized_WithNoAuthentication() throws Exception{
+        AddUserDto addUserDto = testDataUtil.addUserDto1();
+        userServices.addUser(addUserDto);
+
+        UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder()
+                .previousPassword("xyz")
+                .newPassword("updated")
+                .build();
+
+        String updatePasswordDtoJson = objectMapper.writeValueAsString(updatePasswordDto);
+
+        mockMvc.perform(patch("/users/" + addUserDto.getUsername())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatePasswordDtoJson)
+        ).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "sibghat", roles = "USER")
+    public void updatePassword_ReturnsHTTP403Forbidden_WhenAccessingOtherUsersEndpoint() throws Exception{
+        AddUserDto addUserDto = testDataUtil.addUserDto1();
+        userServices.addUser(addUserDto);
+
+        UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder()
+                .previousPassword("xyz")
+                .newPassword("updated")
+                .build();
+
+        String updatePasswordDtoJson = objectMapper.writeValueAsString(updatePasswordDto);
+
+        mockMvc.perform(patch("/users/" + addUserDto.getUsername())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatePasswordDtoJson)
+        ).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    public void updatePassword_ReturnsHTTP403Forbidden_WithAdminRole() throws Exception{
+        AddUserDto addUserDto = testDataUtil.addUserDto1();
+        userServices.addUser(addUserDto);
+
+        UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder()
+                .previousPassword("xyz")
+                .newPassword("updated")
+                .build();
+
+        String updatePasswordDtoJson = objectMapper.writeValueAsString(updatePasswordDto);
+
+        mockMvc.perform(patch("/users/" + addUserDto.getUsername())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatePasswordDtoJson)
+        ).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    public void updatePassword_ReturnsHTTP400BadRequest_WithInvalidRequiredFields() throws Exception{
+        AddUserDto addUserDto = testDataUtil.addUserDto1();
+        userServices.addUser(addUserDto);
+
+        UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder().build();
+
+        String updatePasswordDtoJson = objectMapper.writeValueAsString(updatePasswordDto);
+
+        mockMvc.perform(patch("/users/" + addUserDto.getUsername())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatePasswordDtoJson)
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.previousPassword").value("must not be blank")
+        ).andExpect(jsonPath("$.newPassword").value("must not be blank"));
+    }
 }

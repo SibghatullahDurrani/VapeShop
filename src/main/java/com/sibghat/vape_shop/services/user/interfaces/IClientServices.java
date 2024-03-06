@@ -1,4 +1,4 @@
-package com.sibghat.vape_shop.services.user;
+package com.sibghat.vape_shop.services.user.interfaces;
 
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
@@ -6,10 +6,11 @@ import com.sibghat.vape_shop.dtos.user.UpdatePasswordDto;
 import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 
-public interface IUserServices {
+public interface IClientServices {
 
-    ResponseEntity<GetUserDto> addUser(AddUserDto addUserDto);
+    ResponseEntity<GetUserDto> addUser(AddUserDto addUserDto, String createdBy);
 
     ResponseEntity<GetUserDto> getUser(String username);
 

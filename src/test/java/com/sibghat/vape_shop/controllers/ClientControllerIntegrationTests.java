@@ -1,13 +1,12 @@
 package com.sibghat.vape_shop.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sibghat.vape_shop.TestDataUtil;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.dtos.user.UpdatePasswordDto;
 import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
-import com.sibghat.vape_shop.services.user.IUserServices;
+import com.sibghat.vape_shop.services.user.interfaces.IClientServices;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +29,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-public class UserControllerIntegrationTests {
+public class ClientControllerIntegrationTests {
 
     private final MockMvc mockMvc;
-    private final IUserServices userServices;
+    private final IClientServices userServices;
     private final ObjectMapper objectMapper;
 
 
     TestDataUtil testDataUtil = new TestDataUtil();
 
     @Autowired
-    public UserControllerIntegrationTests(MockMvc mockMvc, IUserServices userServices) {
+    public ClientControllerIntegrationTests(MockMvc mockMvc, IClientServices userServices) {
         this.mockMvc = mockMvc;
         this.userServices = userServices;
         this.objectMapper = new ObjectMapper();
@@ -159,7 +158,7 @@ public class UserControllerIntegrationTests {
     @Test
     void addUser_ReturnsHTTP409Conflict_WithUsernameThatAlreadyExists() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
-        userServices.addUser(userToAdd);
+        userServices.addUser(userToAdd,userToAdd.getUsername());
         userToAdd.setEmail("1234@gmail.com");
         userToAdd.setContactNumber("123412341234");
         String userJson = objectMapper.writeValueAsString(userToAdd);
@@ -173,7 +172,7 @@ public class UserControllerIntegrationTests {
     @Test
     void addUser_ReturnsHTTP409Conflict_WithEmailThatAlreadyExists() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
-        userServices.addUser(userToAdd);
+        userServices.addUser(userToAdd,userToAdd.getUsername());
         userToAdd.setUsername("abc");
         userToAdd.setContactNumber("123412341234");
         String userJson = objectMapper.writeValueAsString(userToAdd);
@@ -187,7 +186,7 @@ public class UserControllerIntegrationTests {
     @Test
     void adUser_ReturnsHTTP409Conflict_WithContactNumberThatAlreadyExists() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
-        userServices.addUser(userToAdd);
+        userServices.addUser(userToAdd,userToAdd.getUsername());
         userToAdd.setUsername("abc");
         userToAdd.setEmail("abc@gmail.com");
         String userJson = objectMapper.writeValueAsString(userToAdd);
@@ -201,7 +200,7 @@ public class UserControllerIntegrationTests {
     @Test
     void addUserReturnsHTTP409Conflict_WithEveryUniqueFieldThatAlreadyExists() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
-        userServices.addUser(userToAdd);
+        userServices.addUser(userToAdd,userToAdd.getUsername());
         String userJson = objectMapper.writeValueAsString(userToAdd);
         mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -215,7 +214,7 @@ public class UserControllerIntegrationTests {
     @Test
     void verifyUser_ReturnsHTTP200Ok_WithCorrectVerificationCode() throws Exception {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
-        ResponseEntity<GetUserDto> user = userServices.addUser(userToAdd);
+        ResponseEntity<GetUserDto> user = userServices.addUser(userToAdd,userToAdd.getUsername());
         mockMvc.perform(patch("/users/verify/"+ Objects
                 .requireNonNull(user.getBody()).getVerificationCode())
         ).andExpect(status().isOk());
@@ -228,10 +227,10 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    @WithMockUser(username = "aqrar",roles = "USER")
+    @WithMockUser(username = "aqrar",roles = "CLIENT")
     void getUser_ReturnsHTTP200Ok_WithCorrectUserCredentials() throws Exception {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
-        userServices.addUser(userToAdd);
+        userServices.addUser(userToAdd,userToAdd.getUsername());
         mockMvc.perform(get("/users/aqrar"))
                 .andExpect(status().isOk());
     }
@@ -244,10 +243,10 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    @WithMockUser(username = "xyz", roles = "USER")
+    @WithMockUser(username = "xyz", roles = "CLIENT")
     public void getUser_Returns403Forbidden_WhenAccessingUserInformationThatIsNotTheirs() throws Exception {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
-        userServices.addUser(userToAdd);
+        userServices.addUser(userToAdd,userToAdd.getUsername());
         mockMvc.perform(get("/users/aqrar"))
                 .andExpect(status().isForbidden());
     }
@@ -259,10 +258,10 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    @WithMockUser(username = "aqrar", roles = "USER")
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
     public void updateUser_ReturnsHTTP200OK_WithCorrectData() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
-        userServices.addUser(userToAdd);
+        userServices.addUser(userToAdd,userToAdd.getUsername());
 
         UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
         String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
@@ -279,7 +278,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    @WithMockUser(username = "aqrar", roles = "USER")
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
     public void updateUser_Returns400BadRequest_WithNoFirstName() throws Exception{
         UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
         updatedUserData.setFirstName(null);
@@ -294,7 +293,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    @WithMockUser(username = "aqrar", roles = "USER")
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
     public void updateUser_Returns400BadRequest_WithNoLastName() throws Exception{
         UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
         updatedUserData.setLastName(null);
@@ -309,7 +308,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    @WithMockUser(username = "aqrar", roles = "USER")
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
     public void updateUser_Returns400BadRequest_WithNoContactNumber() throws Exception{
         UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
         updatedUserData.setContactNumber(null);
@@ -324,7 +323,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    @WithMockUser(username = "aqrar", roles = "USER")
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
     public void updateUser_Returns400BadRequest_WithNoData() throws Exception{
         UpdateUserDto updateUserDto = UpdateUserDto.builder().build();
         String updatedUserDataJson = objectMapper.writeValueAsString(updateUserDto);
@@ -340,10 +339,10 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    @WithMockUser(username = "aqrar", roles = "USER")
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
     public void updateUser_Returns409Conflict_WithContactNumberThatAlreadyExists() throws Exception{
         AddUserDto addUserDto = testDataUtil.addUserDto1();
-        userServices.addUser(addUserDto);
+        userServices.addUser(addUserDto, addUserDto.getUsername());
 
         UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
         updatedUserData.setContactNumber(addUserDto.getContactNumber());
@@ -376,7 +375,7 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    @WithMockUser(username = "xyz", roles = "USER")
+    @WithMockUser(username = "xyz", roles = "CLIENT")
     public void updateUser_Returns403Forbidden_WhenUpdatingUserInformationThatIsNotTheirs() throws Exception {
         UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
         String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
@@ -388,10 +387,10 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    @WithMockUser(username = "aqrar", roles = "USER")
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
     public void updatePassword_ReturnsHTTP200OK_WithValidUsernameAndPassword() throws Exception {
         AddUserDto addUserDto = testDataUtil.addUserDto1();
-        userServices.addUser(addUserDto);
+        userServices.addUser(addUserDto, addUserDto.getUsername());
 
         UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder()
                 .previousPassword(addUserDto.getPassword())
@@ -408,10 +407,10 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    @WithMockUser(username = "aqrar", roles = "USER")
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
     public void updatePassword_ReturnsHTTP400BadRequest_WithInvalidPreviousPassword() throws Exception {
         AddUserDto addUserDto = testDataUtil.addUserDto1();
-        userServices.addUser(addUserDto);
+        userServices.addUser(addUserDto, addUserDto.getUsername());
 
         UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder()
                 .previousPassword("xyz")
@@ -430,7 +429,7 @@ public class UserControllerIntegrationTests {
     @Test
     public void updatePassword_ReturnsHTTP401Unauthorized_WithNoAuthentication() throws Exception{
         AddUserDto addUserDto = testDataUtil.addUserDto1();
-        userServices.addUser(addUserDto);
+        userServices.addUser(addUserDto, addUserDto.getUsername());
 
         UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder()
                 .previousPassword("xyz")
@@ -446,10 +445,10 @@ public class UserControllerIntegrationTests {
     }
 
     @Test
-    @WithMockUser(username = "sibghat", roles = "USER")
+    @WithMockUser(username = "sibghat", roles = "CLIENT")
     public void updatePassword_ReturnsHTTP403Forbidden_WhenAccessingOtherUsersEndpoint() throws Exception{
         AddUserDto addUserDto = testDataUtil.addUserDto1();
-        userServices.addUser(addUserDto);
+        userServices.addUser(addUserDto, addUserDto.getUsername());
 
         UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder()
                 .previousPassword("xyz")
@@ -468,7 +467,7 @@ public class UserControllerIntegrationTests {
     @WithMockUser(username = "aqrar", roles = "ADMIN")
     public void updatePassword_ReturnsHTTP403Forbidden_WithAdminRole() throws Exception{
         AddUserDto addUserDto = testDataUtil.addUserDto1();
-        userServices.addUser(addUserDto);
+        userServices.addUser(addUserDto, addUserDto.getUsername());
 
         UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder()
                 .previousPassword("xyz")
@@ -487,7 +486,7 @@ public class UserControllerIntegrationTests {
     @WithMockUser(username = "aqrar", roles = "ADMIN")
     public void updatePassword_ReturnsHTTP400BadRequest_WithInvalidRequiredFields() throws Exception{
         AddUserDto addUserDto = testDataUtil.addUserDto1();
-        userServices.addUser(addUserDto);
+        userServices.addUser(addUserDto, addUserDto.getUsername());
 
         UpdatePasswordDto updatePasswordDto = UpdatePasswordDto.builder().build();
 

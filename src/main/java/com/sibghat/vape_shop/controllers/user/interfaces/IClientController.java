@@ -1,4 +1,4 @@
-package com.sibghat.vape_shop.controllers.interfaces;
+package com.sibghat.vape_shop.controllers.user.interfaces;
 
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
@@ -9,9 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-public interface IUserController {
+public interface IClientController {
 
     @PostMapping("/users")
     ResponseEntity<GetUserDto> addUser(@Valid @RequestBody AddUserDto userToAdd);
@@ -22,7 +23,7 @@ public interface IUserController {
     @GetMapping("/users/{username}")
     @PreAuthorize("""
     #username == authentication.name and
-    hasRole("USER")
+    hasRole("CLIENT")
 """)
     @PostAuthorize("""
     returnObject.body.username == authentication.name
@@ -32,7 +33,7 @@ public interface IUserController {
     @PutMapping("/users/{username}")
     @PreAuthorize("""
     #username == authentication.name and
-    hasRole("USER")
+    hasRole("CLIENT")
 """)
     @PostAuthorize("""
     returnObject.body.username == authentication.name
@@ -45,7 +46,7 @@ public interface IUserController {
     @PatchMapping("/users/{username}")
     @PreAuthorize("""
     #username == authentication.name and
-    hasRole("USER")
+    hasRole("CLIENT")
 """)
     ResponseEntity<HttpStatus> updatePassword(
       @PathVariable String username,

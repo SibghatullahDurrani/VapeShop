@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.sibghat.vape_shop.TestDataUtil;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
-import com.sibghat.vape_shop.services.user.IAdminUserServices;
-import com.sibghat.vape_shop.services.user.IUserServices;
+import com.sibghat.vape_shop.services.user.interfaces.IAdminServices;
+import com.sibghat.vape_shop.services.user.interfaces.IClientServices;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,16 +32,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AdminUserControllerIntegrationTests {
 
     private final MockMvc mockMvc;
-    private final IAdminUserServices adminUserServices;
-    private final IUserServices userServices;
+    private final IAdminServices adminUserServices;
+    private final IClientServices userServices;
     private final ObjectMapper objectMapper;
     private final TestDataUtil testDataUtil = new TestDataUtil();
 
     @Autowired
     public AdminUserControllerIntegrationTests(
             MockMvc mockMvc,
-            IAdminUserServices adminUserServices,
-            IUserServices userServices) {
+            IAdminServices adminUserServices,
+            IClientServices userServices) {
         this.mockMvc = mockMvc;
         this.adminUserServices = adminUserServices;
         this.userServices = userServices;
@@ -57,7 +57,7 @@ public class AdminUserControllerIntegrationTests {
         mockMvc.perform(post("/users/admins")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userToAddJson)
-        ).andExpect(status().isOk()
+        ).andExpect(status().isCreated()
         ).andExpect(jsonPath("$.username").value(userToAdd.getUsername())
         ).andExpect(jsonPath("$.firstName").value(userToAdd.getFirstName())
         ).andExpect(jsonPath("$.lastName").value(userToAdd.getLastName())
@@ -192,7 +192,7 @@ public class AdminUserControllerIntegrationTests {
     @WithMockUser(username = "aqrar",roles = "ADMIN")
     public void addAdmin_Returns409Conflict_WithAllDetailsThatAlreadyExists() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
-        adminUserServices.addAdmin(userToAdd, userToAdd.getUsername());
+        adminUserServices.addUser(userToAdd, userToAdd.getUsername());
 
         String userToAddJson = objectMapper.writeValueAsString(userToAdd);
 
@@ -210,7 +210,7 @@ public class AdminUserControllerIntegrationTests {
     public void addAdmin_Returns409Conflict_WithUsernameThatAlreadyExists() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
 
-        adminUserServices.addAdmin(userToAdd, userToAdd.getUsername());
+        adminUserServices.addUser(userToAdd, userToAdd.getUsername());
 
         userToAdd.setContactNumber("123541348976123");
         userToAdd.setEmail("sdhfbvkjahsdv@gmail.com");
@@ -229,7 +229,7 @@ public class AdminUserControllerIntegrationTests {
     public void addAdmin_Returns409Conflict_WithEmailThatAlreadyExists() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
 
-        adminUserServices.addAdmin(userToAdd, userToAdd.getUsername());
+        adminUserServices.addUser(userToAdd, userToAdd.getUsername());
 
         userToAdd.setContactNumber("123541348976123");
         userToAdd.setUsername("sdhfbvkjahsdv");
@@ -248,7 +248,7 @@ public class AdminUserControllerIntegrationTests {
     public void addAdmin_Returns409Conflict_WithContactNumberThatAlreadyExists() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
 
-        adminUserServices.addAdmin(userToAdd, userToAdd.getUsername());
+        adminUserServices.addUser(userToAdd, userToAdd.getUsername());
 
         userToAdd.setEmail("asdfadsfgas@gmail.com");
         userToAdd.setUsername("sdhfbvkjahsdv");
@@ -284,7 +284,7 @@ public class AdminUserControllerIntegrationTests {
     @WithMockUser(username = "aqrar",roles = "ADMIN")
     public void getAdmin_ReturnsHTTP200OK_WithValidUsername() throws Exception{
         AddUserDto userToAdd = testDataUtil.addUserDto1();
-        adminUserServices.addAdmin(userToAdd, userToAdd.getUsername());
+        adminUserServices.addUser(userToAdd, userToAdd.getUsername());
 
         mockMvc.perform(get("/users/admins/"  + userToAdd.getUsername())
         ).andExpect(status().isOk());
@@ -316,9 +316,9 @@ public class AdminUserControllerIntegrationTests {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         AddUserDto userToAdd2 = testDataUtil.addUserDto2();
         AddUserDto userToAdd3 = testDataUtil.addUserDto3();
-        adminUserServices.addAdmin(userToAdd, userToAdd.getUsername());
-        adminUserServices.addAdmin(userToAdd2, userToAdd2.getUsername());
-        adminUserServices.addAdmin(userToAdd3, userToAdd3.getUsername());
+        adminUserServices.addUser(userToAdd, userToAdd.getUsername());
+        adminUserServices.addUser(userToAdd2, userToAdd2.getUsername());
+        adminUserServices.addUser(userToAdd3, userToAdd3.getUsername());
 
         MvcResult result = mockMvc.perform(get("/users/admins")
                 .param("page","0")
@@ -337,9 +337,9 @@ public class AdminUserControllerIntegrationTests {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         AddUserDto userToAdd2 = testDataUtil.addUserDto2();
         AddUserDto userToAdd3 = testDataUtil.addUserDto3();
-        adminUserServices.addAdmin(userToAdd, userToAdd.getUsername());
-        adminUserServices.addAdmin(userToAdd2, userToAdd2.getUsername());
-        adminUserServices.addAdmin(userToAdd3, userToAdd3.getUsername());
+        adminUserServices.addUser(userToAdd, userToAdd.getUsername());
+        adminUserServices.addUser(userToAdd2, userToAdd2.getUsername());
+        adminUserServices.addUser(userToAdd3, userToAdd3.getUsername());
 
         MvcResult result = mockMvc.perform(get("/users/admins")
                 .param("page","0")
@@ -457,9 +457,9 @@ public class AdminUserControllerIntegrationTests {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         AddUserDto userToAdd2 = testDataUtil.addUserDto2();
         AddUserDto userToAdd3 = testDataUtil.addUserDto3();
-        userServices.addUser(userToAdd);
-        userServices.addUser(userToAdd2);
-        userServices.addUser(userToAdd3);
+        userServices.addUser(userToAdd,userToAdd.getUsername());
+        userServices.addUser(userToAdd2,userToAdd2.getUsername());
+        userServices.addUser(userToAdd3,userToAdd3.getUsername());
 
         MvcResult result = mockMvc.perform(get("/users")
                 .param("page","0")
@@ -478,9 +478,9 @@ public class AdminUserControllerIntegrationTests {
         AddUserDto userToAdd = testDataUtil.addUserDto1();
         AddUserDto userToAdd2 = testDataUtil.addUserDto2();
         AddUserDto userToAdd3 = testDataUtil.addUserDto3();
-        userServices.addUser(userToAdd);
-        userServices.addUser(userToAdd2);
-        userServices.addUser(userToAdd3);
+        userServices.addUser(userToAdd,userToAdd.getUsername());
+        userServices.addUser(userToAdd2,userToAdd2.getUsername());
+        userServices.addUser(userToAdd3,userToAdd3.getUsername());
 
         MvcResult result = mockMvc.perform(get("/users")
                 .param("page","0")

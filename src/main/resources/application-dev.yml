@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vape_shop
+    username: postgres
+    password: sdbarakzai123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    database: postgresql
+    hibernate:
+      ddl-auto: update
+  mail:
+    host: 127.0.0.1
+    port: 25
+    test-connection: true
+    properties:
+      mail:
+        smtp:
+          auth: false
+    protocol: smtp
+
+server:
+  port: 3000
+
+jwksUri: http://localhost:8080/oauth2/jwks

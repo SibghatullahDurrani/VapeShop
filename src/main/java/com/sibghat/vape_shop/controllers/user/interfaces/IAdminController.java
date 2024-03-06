@@ -1,4 +1,4 @@
-package com.sibghat.vape_shop.controllers.interfaces;
+package com.sibghat.vape_shop.controllers.user.interfaces;
 
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
@@ -11,7 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-public interface IAdminUserController {
+public interface IAdminController {
 
     @PostMapping("/users/admins")
     @PreAuthorize("""
@@ -27,7 +27,7 @@ public interface IAdminUserController {
     @PostAuthorize("""
     returnObject.body.username == authentication.name
 """)
-    ResponseEntity<GetUserByAdminDto> getAdmin(@PathVariable String username);
+    ResponseEntity<GetUserDto> getAdmin(@PathVariable String username);
 
     @GetMapping("/users/admins")
     @PreAuthorize("""

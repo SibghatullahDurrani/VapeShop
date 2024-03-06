@@ -1,32 +1,34 @@
-package com.sibghat.vape_shop.controllers;
+package com.sibghat.vape_shop.controllers.user;
 
-import com.sibghat.vape_shop.controllers.interfaces.IUserController;
+import com.sibghat.vape_shop.controllers.user.interfaces.IClientController;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.dtos.user.UpdatePasswordDto;
 import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
-import com.sibghat.vape_shop.services.user.IUserServices;
-import com.sibghat.vape_shop.services.user.UserServices;
+import com.sibghat.vape_shop.services.user.interfaces.IClientServices;
+import com.sibghat.vape_shop.services.user.ClientServices;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class UserController implements IUserController {
+public class ClientController implements IClientController {
 
-    private final IUserServices userServices;
+    private final IClientServices userServices;
 
-    public UserController(UserServices userServices) {
-        this.userServices = userServices;
+    public ClientController(ClientServices clientServices) {
+        this.userServices = clientServices;
     }
 
 
     @Override
     public ResponseEntity<GetUserDto> addUser(AddUserDto userToAdd) {
-        return userServices.addUser(userToAdd);
+        String username = userToAdd.getUsername();
+        return userServices.addUser(userToAdd,username);
     }
 
     @Override

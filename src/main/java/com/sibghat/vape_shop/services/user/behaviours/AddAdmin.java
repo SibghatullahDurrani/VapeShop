@@ -1,25 +1,23 @@
-package com.sibghat.vape_shop.services.user;
+package com.sibghat.vape_shop.services.user.behaviours;
 
 import com.sibghat.vape_shop.domains.User;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
-import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.mappers.user.AddUserDtoToUserMapper;
 import com.sibghat.vape_shop.mappers.user.UserToGetUserDtoMapper;
 import com.sibghat.vape_shop.repositories.UserRepository;
 import com.sibghat.vape_shop.services.conditionEvaluators.IUserRelatedConditionEvaluators;
-import com.sibghat.vape_shop.services.conditionEvaluators.UserRelatedConditionEvaluators;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.sibghat.vape_shop.services.user.behaviours.interfaces.IAddBehaviour;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.time.Instant;
+import java.util.UUID;
 
 @Service
-public class AdminUserServices implements IAdminUserServices{
+public class AddAdmin implements IAddBehaviour {
 
     private final UserRepository userRepository;
     private final AddUserDtoToUserMapper addUserDtoToUserMapper;
@@ -27,12 +25,13 @@ public class AdminUserServices implements IAdminUserServices{
     private final PasswordEncoder passwordEncoder;
     private final IUserRelatedConditionEvaluators userRelatedConditionEvaluators;
 
-    public AdminUserServices(
+    public AddAdmin(
             UserRepository userRepository,
             AddUserDtoToUserMapper addUserDtoToUserMapper,
             UserToGetUserDtoMapper userToGetUserDtoMapper,
             PasswordEncoder passwordEncoder,
-            UserRelatedConditionEvaluators userRelatedConditionEvaluators) {
+            IUserRelatedConditionEvaluators userRelatedConditionEvaluators
+    ) {
         this.userRepository = userRepository;
         this.addUserDtoToUserMapper = addUserDtoToUserMapper;
         this.userToGetUserDtoMapper = userToGetUserDtoMapper;
@@ -41,44 +40,20 @@ public class AdminUserServices implements IAdminUserServices{
     }
 
     @Override
-    public ResponseEntity<GetUserDto> addAdmin(AddUserDto adminToAdd, String createdBy) {
-        userRelatedConditionEvaluators.checkThatUserDoesNotAlreadyExistsBeforeAddingANewUser(adminToAdd);
-        User user = addUserDtoToUserMapper.mapFrom(adminToAdd);
+    public ResponseEntity<GetUserDto> add(AddUserDto userToAdd, String createdBy) {
+        int VERIFICATION_CODE_EXPIRATION_TIME_IN_SECONDS = 600;
+        userRelatedConditionEvaluators.checkThatUserDoesNotAlreadyExistsBeforeAddingANewUser(userToAdd);
+        User user = addUserDtoToUserMapper.mapFrom(userToAdd);
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
         user.setCreatedBy(createdBy);
         user.setRole("ROLE_ADMIN");
+        user.setVerificationCode(UUID.randomUUID().toString());
+        user.setVerificationCodeValidTill(Instant.now().getEpochSecond() +
+                VERIFICATION_CODE_EXPIRATION_TIME_IN_SECONDS);
         return new ResponseEntity<>(
                 userToGetUserDtoMapper.mapFrom(userRepository.save(user)),
-                HttpStatus.OK
+                HttpStatus.CREATED
         );
-
     }
-
-    @Override
-    public ResponseEntity<GetUserByAdminDto> getAdmin(String username) {
-        Optional<GetUserByAdminDto> user = userRepository.getAdminByUsername(username);
-
-        return user.map(getAdminDto -> new ResponseEntity<>(getAdminDto, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-
-    }
-
-    @Override
-    public ResponseEntity<Page<GetUserByAdminDto>> getAllUsers(
-            int page,
-            int size,
-            String role,
-            String username
-    ) {
-        PageRequest pageRequest = PageRequest.of(page,size);
-        Page<GetUserByAdminDto> usersPage;
-        if(username.isEmpty()){
-            usersPage = userRepository.getAllUsers(role, pageRequest);
-        }else{
-            usersPage = userRepository.getUsersBySearch(username, role, pageRequest);
-        }
-        return new ResponseEntity<>(usersPage, HttpStatus.OK);
-    }
-
 }

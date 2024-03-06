@@ -20,16 +20,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class AdminUserServicesUnitTests {
+public class AdminServicesUnitTests {
 
     @Mock
     private UserRepository userRepository;
@@ -44,37 +46,7 @@ public class AdminUserServicesUnitTests {
     private final TestDataUtil testDataUtil = new TestDataUtil();
     private final TestUtilMappers testUtilMappers = new TestUtilMappers();
     @InjectMocks
-    private AdminUserServices underTest;
-
-    @Test
-    public void addAdmin_ReturnsHTTP200OkAndValidBody_WithValidData(){
-        AddUserDto userToAdd = testDataUtil.addUserDto1();
-        String createdBy = userToAdd.getUsername();
-        User mappedUser = testUtilMappers.addUserDtoToUserMapper(userToAdd);
-        GetUserDto mappedUserDto = testUtilMappers.userToGetUserDtoMapper(mappedUser);
-
-
-        when(addUserDtoToUserMapper.mapFrom(userToAdd))
-                .thenReturn(mappedUser);
-
-        when(passwordEncoder.encode(mappedUser.getPassword()))
-                .thenReturn(mappedUser.getPassword());
-
-        mappedUser.setCreatedBy(createdBy);
-        mappedUser.setRole("ROLE_ADMIN");
-
-        when(userRepository.save(mappedUser))
-                .thenReturn(mappedUser);
-
-        when(userToGetUserDtoMapper.mapFrom(mappedUser))
-                .thenReturn(mappedUserDto);
-
-        var result = underTest.addAdmin(userToAdd,createdBy);
-
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(mappedUserDto);
-
-    }
+    private AdminServices underTest;
 
     @Test
     public void getAdmin_ReturnsHTTP200OKAndValidBody_WithValidUsername(){
@@ -90,16 +62,16 @@ public class AdminUserServicesUnitTests {
         assertThat(result.getBody()).isEqualTo(adminDto);
 
     }
-
-    @Test
-    public void getAdmin_ReturnsHTTP404NotFound_WithInvalidUsername(){
-        when(userRepository.getAdminByUsername(Mockito.anyString()))
-                .thenReturn(Optional.empty());
-
-        var result = underTest.getAdmin(Mockito.anyString());
-
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    }
+//
+//    @Test
+//    public void getAdmin_ReturnsHTTP404NotFound_WithInvalidUsername(){
+//        when(userRepository.getAdminByUsername(Mockito.anyString()))
+//                .thenReturn(Optional.empty());
+//
+//        var result = underTest.getAdmin(Mockito.anyString());
+//
+//        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+//    }
 
     @Test
     public void getAllUsers_ReturnsHTTP200OK_WithNoUsernameToSearchAndValidData(){

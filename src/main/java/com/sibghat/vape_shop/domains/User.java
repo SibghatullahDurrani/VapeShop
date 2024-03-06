@@ -78,7 +78,7 @@ public class User {
     @Column(
             nullable = false
     )
-    private String role="ROLE_USER";
+    private String role="ROLE_CLIENT";
 
     @Column(
             unique = true

@@ -1,11 +1,11 @@
-package com.sibghat.vape_shop.controllers;
+package com.sibghat.vape_shop.controllers.user;
 
-import com.sibghat.vape_shop.controllers.interfaces.IAdminUserController;
+import com.sibghat.vape_shop.controllers.user.interfaces.IAdminController;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
-import com.sibghat.vape_shop.services.user.AdminUserServices;
-import com.sibghat.vape_shop.services.user.IAdminUserServices;
+import com.sibghat.vape_shop.services.user.AdminServices;
+import com.sibghat.vape_shop.services.user.interfaces.IAdminServices;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -16,23 +16,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class AdminUserController implements IAdminUserController {
+public class AdminController implements IAdminController {
 
-    private final IAdminUserServices adminUserServices;
+    private final IAdminServices adminUserServices;
 
-    public AdminUserController(AdminUserServices adminUserServices) {
-        this.adminUserServices = adminUserServices;
+    public AdminController(AdminServices adminServices) {
+        this.adminUserServices = adminServices;
     }
 
     @Override
-    public ResponseEntity<GetUserDto> addAdmin(@Valid @RequestBody AddUserDto adminToAdd, Authentication authentication){
-        return adminUserServices.addAdmin(adminToAdd,authentication.getName());
+    public ResponseEntity<GetUserDto> addAdmin(@Valid @RequestBody AddUserDto adminToAdd, Authentication a){
+        return adminUserServices.addUser(adminToAdd,a.getName());
     }
 
 
     @Override
-    public ResponseEntity<GetUserByAdminDto> getAdmin(@PathVariable String username) {
-        return adminUserServices.getAdmin(username);
+    public ResponseEntity<GetUserDto> getAdmin(@PathVariable String username) {
+        return adminUserServices.getUser(username);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class AdminUserController implements IAdminUserController {
             @RequestParam int size,
             @RequestParam String username
     ){
-        String USER_ROLE = "ROLE_USER";
+        String USER_ROLE = "ROLE_CLIENT";
         return adminUserServices.getAllUsers(page,size, USER_ROLE, username);
     }
 

@@ -21,27 +21,27 @@ import java.io.UnsupportedEncodingException;
 @RestController
 public class ClientController implements IClientController {
 
-    private final IClientServices userServices;
+    private final IClientServices clientServices;
 
     public ClientController(ClientServices clientServices) {
-        this.userServices = clientServices;
+        this.clientServices = clientServices;
     }
 
 
     @Override
     public ResponseEntity<GetUserDto> addUser(AddUserDto userToAdd) throws MessagingException, UnsupportedEncodingException {
         String username = userToAdd.getUsername();
-        return userServices.addUser(userToAdd,username);
+        return clientServices.addUser(userToAdd,username);
     }
 
     @Override
     public ResponseEntity<HttpStatus> verifyUser(@PathVariable String verification_code){
-        return userServices.verifyUser(verification_code);
+        return clientServices.verifyUser(verification_code);
     }
 
    @Override
     public ResponseEntity<GetUserDto> getUser(@PathVariable String username){
-        return userServices.getUser(username);
+        return clientServices.getUser(username);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class ClientController implements IClientController {
             @PathVariable String username,
             @Valid @RequestBody UpdateUserDto userToUpdate
     ){
-        return userServices.updateUser(username, userToUpdate);
+        return clientServices.updateUser(username, userToUpdate);
     }
 
     @Override
@@ -57,6 +57,6 @@ public class ClientController implements IClientController {
             @PathVariable String username,
             @Valid @RequestBody UpdatePasswordDto updatePasswordDto
     ) {
-        return userServices.updatePassword(username,updatePasswordDto);
+        return clientServices.updatePassword(username,updatePasswordDto);
     }
 }

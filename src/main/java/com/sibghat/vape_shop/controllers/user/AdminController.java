@@ -4,6 +4,7 @@ import com.sibghat.vape_shop.controllers.user.interfaces.IAdminController;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
+import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
 import com.sibghat.vape_shop.services.user.AdminServices;
 import com.sibghat.vape_shop.services.user.interfaces.IAdminServices;
 import jakarta.mail.MessagingException;
@@ -21,21 +22,21 @@ import java.io.UnsupportedEncodingException;
 @RestController
 public class AdminController implements IAdminController {
 
-    private final IAdminServices adminUserServices;
+    private final IAdminServices adminServices;
 
     public AdminController(AdminServices adminServices) {
-        this.adminUserServices = adminServices;
+        this.adminServices = adminServices;
     }
 
     @Override
     public ResponseEntity<GetUserDto> addAdmin(@Valid @RequestBody AddUserDto adminToAdd, Authentication a) throws MessagingException, UnsupportedEncodingException {
-        return adminUserServices.addUser(adminToAdd,a.getName());
+        return adminServices.addUser(adminToAdd,a.getName());
     }
 
 
     @Override
     public ResponseEntity<GetUserDto> getAdmin(@PathVariable String username) {
-        return adminUserServices.getUser(username);
+        return adminServices.getUser(username);
     }
 
     @Override
@@ -45,7 +46,7 @@ public class AdminController implements IAdminController {
             @RequestParam String username
     ){
         String ADMIN_ROLE = "ROLE_ADMIN";
-        return adminUserServices.getAllUsers(page, size, ADMIN_ROLE,username);
+        return adminServices.getAllUsers(page, size, ADMIN_ROLE,username);
     }
 
     @Override
@@ -55,7 +56,12 @@ public class AdminController implements IAdminController {
             @RequestParam String username
     ){
         String USER_ROLE = "ROLE_CLIENT";
-        return adminUserServices.getAllUsers(page,size, USER_ROLE, username);
+        return adminServices.getAllUsers(page,size, USER_ROLE, username);
+    }
+
+    @Override
+    public ResponseEntity<GetUserDto> updateAdmin(@PathVariable String username, @Valid @RequestBody UpdateUserDto updateUserDto) {
+        return adminServices.updateUser(username, updateUserDto);
     }
 
 

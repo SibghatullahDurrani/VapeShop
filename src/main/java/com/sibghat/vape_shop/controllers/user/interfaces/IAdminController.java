@@ -3,6 +3,8 @@ package com.sibghat.vape_shop.controllers.user.interfaces;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
+import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
+import com.sibghat.vape_shop.services.user.behaviours.UpdateUser;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -53,5 +55,12 @@ public interface IAdminController {
             @RequestParam int size,
             @RequestParam String username
     );
+
+    @PutMapping("/users/admins/{username}")
+    @PreAuthorize("""
+    hasRole("ADMIN") and
+    #username == authentication.name
+""")
+    ResponseEntity<GetUserDto> updateAdmin(@PathVariable String username, @Valid @RequestBody UpdateUserDto updateUserDto);
 
 }

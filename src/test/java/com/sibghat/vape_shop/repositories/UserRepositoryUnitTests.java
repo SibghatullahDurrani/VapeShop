@@ -172,10 +172,10 @@ public class UserRepositoryUnitTests {
     @Test
     public void getUsersBySearch_ReturnsValidPageAndAdmins_WithValidData(){
         User user = testDataUtil.validUser1();
-        user.setRole("ROLE_ADMIN");
         User user2 = testDataUtil.validUser2();
         user2.setRole("ROLE_ADMIN");
         User user3 = testDataUtil.validUser3();
+        user3.setRole("ROLE_ADMIN");
 
         userRepository.save(user);
         userRepository.save(user2);

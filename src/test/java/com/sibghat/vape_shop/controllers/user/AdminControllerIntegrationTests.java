@@ -1,11 +1,12 @@
-package com.sibghat.vape_shop.controllers;
+package com.sibghat.vape_shop.controllers.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.sibghat.vape_shop.TestDataUtil;
+import com.sibghat.vape_shop.domains.User;
 import com.sibghat.vape_shop.dtos.user.AddUserDto;
-import com.sibghat.vape_shop.services.user.interfaces.IAdminServices;
-import com.sibghat.vape_shop.services.user.interfaces.IClientServices;
+import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
+import com.sibghat.vape_shop.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,31 +21,30 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-public class AdminUserControllerIntegrationTests {
+public class AdminControllerIntegrationTests {
 
     private final MockMvc mockMvc;
-    private final IAdminServices adminUserServices;
-    private final IClientServices userServices;
     private final ObjectMapper objectMapper;
     private final TestDataUtil testDataUtil = new TestDataUtil();
+    
+    private final UserRepository userRepository;
 
     @Autowired
-    public AdminUserControllerIntegrationTests(
+    public AdminControllerIntegrationTests(
             MockMvc mockMvc,
-            IAdminServices adminUserServices,
-            IClientServices userServices) {
+            UserRepository userRepository
+    ) {
         this.mockMvc = mockMvc;
-        this.adminUserServices = adminUserServices;
-        this.userServices = userServices;
+        this.userRepository = userRepository;
         this.objectMapper = new ObjectMapper();
     }
 
@@ -191,8 +191,14 @@ public class AdminUserControllerIntegrationTests {
     @Test
     @WithMockUser(username = "aqrar",roles = "ADMIN")
     public void addAdmin_Returns409Conflict_WithAllDetailsThatAlreadyExists() throws Exception{
+        User user = testDataUtil.validUser1();
+        userRepository.save(user);
+
         AddUserDto userToAdd = testDataUtil.addUserDto1();
-        adminUserServices.addUser(userToAdd, userToAdd.getUsername());
+        userToAdd.setEmail(user.getEmail());
+        userToAdd.setUsername(user.getUsername());
+        userToAdd.setContactNumber(user.getContactNumber());
+
 
         String userToAddJson = objectMapper.writeValueAsString(userToAdd);
 
@@ -208,9 +214,13 @@ public class AdminUserControllerIntegrationTests {
     @Test
     @WithMockUser(username = "aqrar",roles = "ADMIN")
     public void addAdmin_Returns409Conflict_WithUsernameThatAlreadyExists() throws Exception{
-        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        User user = testDataUtil.validUser1();
+        userRepository.save(user);
 
-        adminUserServices.addUser(userToAdd, userToAdd.getUsername());
+        AddUserDto userToAdd = testDataUtil.addUserDto1();
+        userToAdd.setEmail("afajdskvf@gmail.com");
+        userToAdd.setUsername(user.getUsername());
+        userToAdd.setContactNumber("1290364192386401932");
 
         userToAdd.setContactNumber("123541348976123");
         userToAdd.setEmail("sdhfbvkjahsdv@gmail.com");
@@ -227,12 +237,13 @@ public class AdminUserControllerIntegrationTests {
     @Test
     @WithMockUser(username = "aqrar",roles = "ADMIN")
     public void addAdmin_Returns409Conflict_WithEmailThatAlreadyExists() throws Exception{
+        User user = testDataUtil.validUser1();
+        userRepository.save(user);
+
         AddUserDto userToAdd = testDataUtil.addUserDto1();
-
-        adminUserServices.addUser(userToAdd, userToAdd.getUsername());
-
-        userToAdd.setContactNumber("123541348976123");
-        userToAdd.setUsername("sdhfbvkjahsdv");
+        userToAdd.setEmail(user.getEmail());
+        userToAdd.setUsername("asdgfkjhadgsf");
+        userToAdd.setContactNumber("1290364192386401932");
 
         String userToAddJson = objectMapper.writeValueAsString(userToAdd);
 
@@ -246,12 +257,13 @@ public class AdminUserControllerIntegrationTests {
     @Test
     @WithMockUser(username = "aqrar",roles = "ADMIN")
     public void addAdmin_Returns409Conflict_WithContactNumberThatAlreadyExists() throws Exception{
+        User user = testDataUtil.validUser1();
+        userRepository.save(user);
+
         AddUserDto userToAdd = testDataUtil.addUserDto1();
-
-        adminUserServices.addUser(userToAdd, userToAdd.getUsername());
-
-        userToAdd.setEmail("asdfadsfgas@gmail.com");
-        userToAdd.setUsername("sdhfbvkjahsdv");
+        userToAdd.setContactNumber(user.getContactNumber());
+        userToAdd.setEmail("afajdskvf@gmail.com");
+        userToAdd.setUsername("asdfasdiufyiads");
 
         String userToAddJson = objectMapper.writeValueAsString(userToAdd);
 
@@ -283,10 +295,10 @@ public class AdminUserControllerIntegrationTests {
     @Test
     @WithMockUser(username = "aqrar",roles = "ADMIN")
     public void getAdmin_ReturnsHTTP200OK_WithValidUsername() throws Exception{
-        AddUserDto userToAdd = testDataUtil.addUserDto1();
-        adminUserServices.addUser(userToAdd, userToAdd.getUsername());
+        User user = testDataUtil.validUser1();
+        userRepository.save(user);
 
-        mockMvc.perform(get("/users/admins/"  + userToAdd.getUsername())
+        mockMvc.perform(get("/users/admins/"  + user.getUsername())
         ).andExpect(status().isOk());
     }
 
@@ -313,12 +325,15 @@ public class AdminUserControllerIntegrationTests {
     @Test
     @WithMockUser(username = "aqrar",roles = "ADMIN")
     public void getAllAdmins_Return200OKAndCorrectData_WithValidParamsAndNoUsernameSearch() throws Exception{
-        AddUserDto userToAdd = testDataUtil.addUserDto1();
-        AddUserDto userToAdd2 = testDataUtil.addUserDto2();
-        AddUserDto userToAdd3 = testDataUtil.addUserDto3();
-        adminUserServices.addUser(userToAdd, userToAdd.getUsername());
-        adminUserServices.addUser(userToAdd2, userToAdd2.getUsername());
-        adminUserServices.addUser(userToAdd3, userToAdd3.getUsername());
+        User userToAdd = testDataUtil.validUser1();
+        userToAdd.setRole("ROLE_ADMIN");
+        User userToAdd2 = testDataUtil.validUser2();
+        userToAdd2.setRole("ROLE_ADMIN");
+        User userToAdd3 = testDataUtil.validUser3();
+        userToAdd3.setRole("ROLE_ADMIN");
+        userRepository.save(userToAdd);
+        userRepository.save(userToAdd2);
+        userRepository.save(userToAdd3);
 
         MvcResult result = mockMvc.perform(get("/users/admins")
                 .param("page","0")
@@ -334,12 +349,15 @@ public class AdminUserControllerIntegrationTests {
     @Test
     @WithMockUser(username = "aqrar",roles = "ADMIN")
     public void getAllAdmins_Return200OKAndCorrectData_WithValidParamsAndUsernameSearch() throws Exception{
-        AddUserDto userToAdd = testDataUtil.addUserDto1();
-        AddUserDto userToAdd2 = testDataUtil.addUserDto2();
-        AddUserDto userToAdd3 = testDataUtil.addUserDto3();
-        adminUserServices.addUser(userToAdd, userToAdd.getUsername());
-        adminUserServices.addUser(userToAdd2, userToAdd2.getUsername());
-        adminUserServices.addUser(userToAdd3, userToAdd3.getUsername());
+        User userToAdd = testDataUtil.validUser1();
+        userToAdd.setRole("ROLE_ADMIN");
+        User userToAdd2 = testDataUtil.validUser2();
+        userToAdd2.setRole("ROLE_ADMIN");
+        User userToAdd3 = testDataUtil.validUser3();
+        userToAdd3.setRole("ROLE_ADMIN");
+        userRepository.save(userToAdd);
+        userRepository.save(userToAdd2);
+        userRepository.save(userToAdd3);
 
         MvcResult result = mockMvc.perform(get("/users/admins")
                 .param("page","0")
@@ -454,12 +472,12 @@ public class AdminUserControllerIntegrationTests {
     @Test
     @WithMockUser(username = "aqrar",roles = "ADMIN")
     public void getAllUsers_Return200OKAndCorrectData_WithValidParamsAndNoUsernameSearch() throws Exception{
-        AddUserDto userToAdd = testDataUtil.addUserDto1();
-        AddUserDto userToAdd2 = testDataUtil.addUserDto2();
-        AddUserDto userToAdd3 = testDataUtil.addUserDto3();
-        userServices.addUser(userToAdd,userToAdd.getUsername());
-        userServices.addUser(userToAdd2,userToAdd2.getUsername());
-        userServices.addUser(userToAdd3,userToAdd3.getUsername());
+        User userToAdd = testDataUtil.validUser1();
+        User userToAdd2 = testDataUtil.validUser2();
+        User userToAdd3 = testDataUtil.validUser3();
+        userRepository.save(userToAdd);
+        userRepository.save(userToAdd2);
+        userRepository.save(userToAdd3);
 
         MvcResult result = mockMvc.perform(get("/users")
                 .param("page","0")
@@ -475,12 +493,12 @@ public class AdminUserControllerIntegrationTests {
     @Test
     @WithMockUser(username = "aqrar",roles = "ADMIN")
     public void getAllUsers_Return200OKAndCorrectData_WithValidParamsAndUsernameSearch() throws Exception{
-        AddUserDto userToAdd = testDataUtil.addUserDto1();
-        AddUserDto userToAdd2 = testDataUtil.addUserDto2();
-        AddUserDto userToAdd3 = testDataUtil.addUserDto3();
-        userServices.addUser(userToAdd,userToAdd.getUsername());
-        userServices.addUser(userToAdd2,userToAdd2.getUsername());
-        userServices.addUser(userToAdd3,userToAdd3.getUsername());
+        User userToAdd = testDataUtil.validUser1();
+        User userToAdd2 = testDataUtil.validUser2();
+        User userToAdd3 = testDataUtil.validUser3();
+        userRepository.save(userToAdd);
+        userRepository.save(userToAdd2);
+        userRepository.save(userToAdd3);
 
         MvcResult result = mockMvc.perform(get("/users")
                 .param("page","0")
@@ -564,7 +582,6 @@ public class AdminUserControllerIntegrationTests {
     @Test
     @WithMockUser(username = "aqrar",roles = "ADMIN")
     public void getAllUsers_Return400BadRequest_WithPageNonInteger() throws Exception{
-
         mockMvc.perform(get("/users")
                 .param("page","s")
                 .param("size","1")
@@ -590,5 +607,134 @@ public class AdminUserControllerIntegrationTests {
                 .param("size","1")
                 .param("username","s")
         ).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    public void updateAdmin_ReturnsHTTP200OK_WithValidData() throws Exception{
+        User userToAdd = testDataUtil.validUser1();
+        userRepository.save(userToAdd);
+
+        UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
+        String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
+
+        mockMvc.perform(put("/users/admins/aqrar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedUserDataJson)
+        ).andExpect(status().isOk()
+        ).andExpect(jsonPath("$.username").value(userToAdd.getUsername())
+        ).andExpect(jsonPath("$.firstName").value(updatedUserData.getFirstName())
+        ).andExpect(jsonPath("$.lastName").value(updatedUserData.getLastName())
+        ).andExpect(jsonPath("$.contactNumber").value(updatedUserData.getContactNumber())
+        ).andExpect(jsonPath("$.email").value(userToAdd.getEmail()));
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    public void updateAdmin_Returns400BadRequest_WithNoFirstName() throws Exception{
+        UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
+        updatedUserData.setFirstName(null);
+        String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
+
+        mockMvc.perform(put("/users/admins/aqrar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedUserDataJson)
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.firstName").value("must not be blank"));
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    public void updateAdmin_Returns400BadRequest_WithNoLastName() throws Exception{
+        UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
+        updatedUserData.setLastName(null);
+        String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
+
+        mockMvc.perform(put("/users/admins/aqrar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedUserDataJson)
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.lastName").value("must not be blank"));
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    public void updateAdmin_Returns400BadRequest_WithNoContactNumber() throws Exception{
+        UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
+        updatedUserData.setContactNumber(null);
+        String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
+
+        mockMvc.perform(put("/users/admins/aqrar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedUserDataJson)
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.contactNumber").value("must not be blank"));
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
+    public void updateAdmin_Returns400BadRequest_WithNoData() throws Exception{
+        UpdateUserDto updateUserDto = UpdateUserDto.builder().build();
+        String updatedUserDataJson = objectMapper.writeValueAsString(updateUserDto);
+
+        mockMvc.perform(put("/users/admins/aqrar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedUserDataJson)
+        ).andExpect(status().isBadRequest()
+        ).andExpect(jsonPath("$.contactNumber").value("must not be blank")
+        ).andExpect(jsonPath("$.lastName").value("must not be blank")
+        ).andExpect(jsonPath("$.firstName").value("must not be blank"));
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    public void updateAdmin_Returns409Conflict_WithContactNumberThatAlreadyExists() throws Exception{
+        User addUserDto = testDataUtil.validUser1();
+        userRepository.save(addUserDto);
+
+        UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
+        updatedUserData.setContactNumber(addUserDto.getContactNumber());
+        String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
+
+        mockMvc.perform(put("/users/admins/aqrar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedUserDataJson)
+        ).andExpect(status().isConflict()
+        ).andExpect(jsonPath("$.contactNumber").value("already exists"));
+
+    }
+
+    @Test
+    public void updateAdmin_ReturnsHTTP401Unauthorized_WithNoAuthentication() throws Exception {
+        mockMvc.perform(put("/users/admins/aqrar"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar",roles = "CLIENT")
+    void updateAdmin_ReturnsHTTP403Forbidden_WithIncorrectRole() throws Exception {
+        UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
+        String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
+
+        mockMvc.perform(put("/users/admins/aqrar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedUserDataJson))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "xyz", roles = "ADMIN")
+    public void updateAdmin_Returns403Forbidden_WhenUpdatingUserInformationThatIsNotTheirs() throws Exception {
+        UpdateUserDto updatedUserData = testDataUtil.updateUserDto();
+        String updatedUserDataJson = objectMapper.writeValueAsString(updatedUserData);
+
+        mockMvc.perform(put("/users/admins/aqrar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedUserDataJson))
+                .andExpect(status().isForbidden());
     }
 }

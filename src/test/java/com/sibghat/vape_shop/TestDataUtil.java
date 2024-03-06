@@ -15,12 +15,13 @@ public class TestDataUtil {
         return User.builder()
                 .firstName("xyz")
                 .lastName("xyz")
-                .username("sibghat")
+                .username("aqrar")
                 .email("xyz@gmail.com")
                 .password("xyz")
                 .contactNumber("12345678")
                 .verificationCode("xyz")
-                .createdBy("sibghat")
+                .verificationCodeValidTill(Instant.now().getEpochSecond() + 600L)
+                .createdBy("aqrar")
                 .build();
     }
 
@@ -28,7 +29,7 @@ public class TestDataUtil {
         return User.builder()
                 .firstName("xyz")
                 .lastName("xyz")
-                .username("sibghat2")
+                .username("sibghat")
                 .email("xyz2@gmail.com")
                 .password("xyz2")
                 .contactNumber("12345678123")
@@ -41,7 +42,7 @@ public class TestDataUtil {
         return User.builder()
                 .firstName("xyz")
                 .lastName("xyz")
-                .username("sibghat3")
+                .username("sami")
                 .email("xyz3@gmail.com")
                 .password("xyz3")
                 .contactNumber("12123345678123")

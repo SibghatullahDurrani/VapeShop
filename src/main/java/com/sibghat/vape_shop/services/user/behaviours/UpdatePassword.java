@@ -32,7 +32,8 @@ public class UpdatePassword implements IUpdatePasswordBehaviour {
                     updatePasswordDto.getPreviousPassword(),
                     previousEncodedPassword.get()
             )){
-                userRepository.updatePassword(updatePasswordDto.getNewPassword(),username);
+                String newPassword = passwordEncoder.encode(updatePasswordDto.getNewPassword());
+                userRepository.updatePassword(newPassword,username);
                 return new ResponseEntity<>(HttpStatus.OK);
             }else{
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

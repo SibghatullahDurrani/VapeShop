@@ -68,4 +68,10 @@ public interface IAdminController {
 """)
     ResponseEntity<HttpStatus> updateAdminPassword(@PathVariable String username, @Valid @RequestBody UpdatePasswordDto updatePasswordDto);
 
+    @DeleteMapping("/users/admins/{username}")
+    @PreAuthorize("""
+    hasRole("ADMIN") and
+    #username == authentication.name
+""")
+    ResponseEntity<HttpStatus> disableAdmin(@PathVariable String username);
 }

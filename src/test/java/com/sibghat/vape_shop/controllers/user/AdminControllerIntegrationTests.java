@@ -8,6 +8,7 @@ import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.UpdatePasswordDto;
 import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
 import com.sibghat.vape_shop.repositories.UserRepository;
+import lombok.With;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -856,5 +857,38 @@ public class AdminControllerIntegrationTests {
         ).andExpect(status().isBadRequest()
         ).andExpect(jsonPath("$.previousPassword").value("must not be blank")
         ).andExpect(jsonPath("$.newPassword").value("must not be blank"));
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    public void disableAdmin_Returns204NoContent_WithValidUsername() throws Exception{
+        User userToAdd = testDataUtil.validUser1();
+        userToAdd.setRole("ROLE_ADMIN");
+        userRepository.save(userToAdd);
+
+        mockMvc.perform(delete("/users/admins/" + userToAdd.getUsername())
+        ).andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    public void disableAdmin_Returns404NotFound_WithInvalidUsername() throws Exception{
+        mockMvc.perform(delete("/users/admins/aqrar")
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    public void disableAdmin_Returns403Forbidden_WithUsernameThatIsNotTheirs() throws Exception{
+        mockMvc.perform(delete("/users/admins/xyz")
+        ).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
+    public void disableAdmin_Returns403Forbidden_WithIncorrectRole() throws Exception{
+        mockMvc.perform(delete("/users/admins/aqrar")
+        ).andExpect(status().isForbidden());
     }
 }

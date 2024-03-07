@@ -1,5 +1,6 @@
 package com.sibghat.vape_shop.domains;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -48,7 +49,6 @@ public class Address {
     private String zip;
 
     @NotNull
-    @FutureOrPresent
     @Column(
             nullable = false,
             updatable = false
@@ -71,6 +71,7 @@ public class Address {
             name = "user_id",
             nullable = false
     )
+    @JsonBackReference
     private User user;
 
 }

@@ -66,6 +66,10 @@ public class AdminController implements IAdminController {
     public ResponseEntity<HttpStatus> updateAdminPassword(@PathVariable String username, @Valid @RequestBody UpdatePasswordDto updatePasswordDto){
         return adminServices.updatePassword(username,updatePasswordDto);
     }
-    //TODO: add disable user endpoint
+
+    @Override
+    public ResponseEntity<HttpStatus> disableAdmin(@PathVariable String username){
+        return adminServices.disableUser(username);
+    }
 
 }

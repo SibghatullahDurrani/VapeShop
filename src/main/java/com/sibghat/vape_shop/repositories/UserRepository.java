@@ -20,6 +20,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
     boolean existsByContactNumber(String contactNumber);
 
+    @Query("""
+    SELECT u.id FROM User u Where u.username = ?1
+""")
+    Optional<Long> getUserIdByUsername(String username);
 
     @Query("""
     SELECT new com.sibghat.vape_shop.dtos.user.GetUserDto(

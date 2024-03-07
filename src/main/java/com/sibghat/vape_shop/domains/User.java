@@ -1,13 +1,11 @@
 package com.sibghat.vape_shop.domains;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -115,6 +113,8 @@ public class User {
             mappedBy = "user",
             cascade = CascadeType.ALL
     )
+    @JsonManagedReference
+    @ToString.Exclude
     private List<Address> addresses;
 
     @OneToOne(

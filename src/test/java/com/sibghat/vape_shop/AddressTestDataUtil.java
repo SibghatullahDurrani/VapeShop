@@ -4,6 +4,7 @@ import com.sibghat.vape_shop.domains.Address;
 import com.sibghat.vape_shop.domains.User;
 import com.sibghat.vape_shop.dtos.address.AddAddressDto;
 import com.sibghat.vape_shop.dtos.address.GetAddressDto;
+import com.sibghat.vape_shop.dtos.address.UpdateAddressDto;
 
 import java.time.LocalDateTime;
 
@@ -40,6 +41,16 @@ public class AddressTestDataUtil {
     public GetAddressDto getAddressDto(){
         return GetAddressDto.builder()
                 .id(1L)
+                .street("xyz")
+                .city("xyz")
+                .state("xyz")
+                .country("xyz")
+                .zip("12345")
+                .build();
+    }
+
+    public UpdateAddressDto updateAddressDto(){
+        return UpdateAddressDto.builder()
                 .street("xyz")
                 .city("xyz")
                 .state("xyz")

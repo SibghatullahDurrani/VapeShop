@@ -7,10 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AddressRepository extends JpaRepository<Address,Long> {
 
     int countAddressByUserId(Long id);
+
+    Optional<Address> findAddressById(Long id);
 
     @Query("""
     SELECT new com.sibghat.vape_shop.dtos.address.GetAddressDto(

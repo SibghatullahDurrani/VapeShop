@@ -7,9 +7,9 @@ import com.sibghat.vape_shop.TestDataUtil;
 import com.sibghat.vape_shop.domains.User;
 import com.sibghat.vape_shop.dtos.address.AddAddressDto;
 import com.sibghat.vape_shop.dtos.address.GetAddressDto;
+import com.sibghat.vape_shop.dtos.address.UpdateAddressDto;
 import com.sibghat.vape_shop.repositories.UserRepository;
 import com.sibghat.vape_shop.services.address.AddressServices;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +23,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -222,6 +221,165 @@ class AddressControllerIntegrationTests {
 
         mockMvc.perform(get("/address/sibghat")
         ).andExpect(status().isForbidden());
+    }
 
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    void updateAddress_Returns200OK_WithValidUsernameAndAddressIdAndAdminRole() throws Exception{
+        User user = testDataUtil.validUser1();
+        userRepository.saveAndFlush(user);
+
+        AddAddressDto addAddressDto = addressTestDataUtil.addAddressDto();
+        addAddressDto.setUserId(null);
+        addressServices.addAddress(user.getUsername(),addAddressDto);
+
+        UpdateAddressDto updateAddressDto = UpdateAddressDto.builder()
+                .street("updated")
+                .city("updated")
+                .state("updated")
+                .country("updated")
+                .zip("12345")
+                .build();
+
+        String updateAddressJson = objectMapper.writeValueAsString(updateAddressDto);
+
+        mockMvc.perform(put("/address/" + user.getUsername() + "/" + "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateAddressJson)
+        ).andExpect(status().isOk()
+        ).andExpect(jsonPath("$.id").isNumber()
+        ).andExpect(jsonPath("$.street").value(updateAddressDto.getStreet())
+        ).andExpect(jsonPath("$.city").value(updateAddressDto.getCity())
+        ).andExpect(jsonPath("$.state").value(updateAddressDto.getState())
+        ).andExpect(jsonPath("$.country").value(updateAddressDto.getCountry())
+        ).andExpect(jsonPath("$.zip").value(updateAddressDto.getZip())
+        );
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
+    void updateAddress_Returns200OK_WithValidUsernameAndAddressIdAndClientRole() throws Exception{
+        User user = testDataUtil.validUser1();
+        userRepository.saveAndFlush(user);
+
+        AddAddressDto addAddressDto = addressTestDataUtil.addAddressDto();
+        addAddressDto.setUserId(null);
+        addressServices.addAddress(user.getUsername(),addAddressDto);
+
+        UpdateAddressDto updateAddressDto = UpdateAddressDto.builder()
+                .street("updated")
+                .city("updated")
+                .state("updated")
+                .country("updated")
+                .zip("12345")
+                .build();
+
+        String updateAddressJson = objectMapper.writeValueAsString(updateAddressDto);
+
+        mockMvc.perform(put("/address/" + user.getUsername() + "/" + "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateAddressJson)
+        ).andExpect(status().isOk()
+        ).andExpect(jsonPath("$.id").isNumber()
+        ).andExpect(jsonPath("$.street").value(updateAddressDto.getStreet())
+        ).andExpect(jsonPath("$.city").value(updateAddressDto.getCity())
+        ).andExpect(jsonPath("$.state").value(updateAddressDto.getState())
+        ).andExpect(jsonPath("$.country").value(updateAddressDto.getCountry())
+        ).andExpect(jsonPath("$.zip").value(updateAddressDto.getZip())
+        );
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
+    void updateAddress_Returns403Forbidden_WhenUpdatingAddressThatIsNotTheirs() throws Exception{
+        User user = testDataUtil.validUser1();
+        userRepository.saveAndFlush(user);
+
+        User user2 = testDataUtil.validUser2();
+        userRepository.saveAndFlush(user2);
+
+        AddAddressDto addAddressDto = addressTestDataUtil.addAddressDto();
+        addAddressDto.setUserId(null);
+        addressServices.addAddress(user2.getUsername(),addAddressDto);
+
+        UpdateAddressDto updateAddressDto = UpdateAddressDto.builder()
+                .street("updated")
+                .city("updated")
+                .state("updated")
+                .country("updated")
+                .zip("12345")
+                .build();
+
+        String updateAddressJson = objectMapper.writeValueAsString(updateAddressDto);
+
+        mockMvc.perform(put("/address/" + user.getUsername() + "/" + "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateAddressJson)
+        ).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
+    void updateAddress_Returns404NotFound_WithInvalidAddressId() throws Exception{
+        User user = testDataUtil.validUser1();
+        userRepository.saveAndFlush(user);
+
+        AddAddressDto addAddressDto = addressTestDataUtil.addAddressDto();
+        addAddressDto.setUserId(null);
+        addressServices.addAddress(user.getUsername(),addAddressDto);
+
+        UpdateAddressDto updateAddressDto = UpdateAddressDto.builder()
+                .street("updated")
+                .city("updated")
+                .state("updated")
+                .country("updated")
+                .zip("12345")
+                .build();
+
+        String updateAddressJson = objectMapper.writeValueAsString(updateAddressDto);
+
+        mockMvc.perform(put("/address/" + user.getUsername() + "/" + "2")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateAddressJson)
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updateAddress_Returns403Unauthorized_WithNoAuthentication() throws Exception{
+
+        UpdateAddressDto updateAddressDto = UpdateAddressDto.builder()
+                .street("updated")
+                .city("updated")
+                .state("updated")
+                .country("updated")
+                .zip("12345")
+                .build();
+
+        String updateAddressJson = objectMapper.writeValueAsString(updateAddressDto);
+
+        mockMvc.perform(put("/address/aqrar/" + "2")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateAddressJson)
+        ).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
+    void updateAddress_Returns403Forbidden_WhenUpdatingAddressWithIncorrectUsername() throws Exception{
+
+        UpdateAddressDto updateAddressDto = UpdateAddressDto.builder()
+                .street("updated")
+                .city("updated")
+                .state("updated")
+                .country("updated")
+                .zip("12345")
+                .build();
+
+        String updateAddressJson = objectMapper.writeValueAsString(updateAddressDto);
+
+        mockMvc.perform(put("/address/sibghat/" + "2")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateAddressJson)
+        ).andExpect(status().isForbidden());
     }
 }

@@ -3,6 +3,7 @@ package com.sibghat.vape_shop.controllers.address;
 import com.sibghat.vape_shop.controllers.address.interfaces.IAddressController;
 import com.sibghat.vape_shop.dtos.address.AddAddressDto;
 import com.sibghat.vape_shop.dtos.address.GetAddressDto;
+import com.sibghat.vape_shop.dtos.address.UpdateAddressDto;
 import com.sibghat.vape_shop.services.address.AddressServices;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -33,5 +34,14 @@ public class AddressController implements IAddressController {
     @Override
     public ResponseEntity<List<GetAddressDto>> getAddress(@PathVariable String username){
         return addressServices.getAddress(username);
+    }
+
+    @Override
+    public ResponseEntity<GetAddressDto> updateAddress(
+            @PathVariable String username,
+            @PathVariable(name = "address_id") Long addressId,
+            @Valid @RequestBody UpdateAddressDto updateAddressDto
+    ){
+        return addressServices.updateAddressDto(addressId,username,updateAddressDto);
     }
 }

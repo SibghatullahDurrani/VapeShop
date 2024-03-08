@@ -55,8 +55,6 @@ public class Address {
     )
     private LocalDateTime createdAt;
 
-
-    @FutureOrPresent
     private LocalDateTime lastModifiedAt;
 
     @Column(

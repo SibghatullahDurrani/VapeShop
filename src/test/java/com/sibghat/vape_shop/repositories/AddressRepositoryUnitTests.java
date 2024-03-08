@@ -177,8 +177,6 @@ class AddressRepositoryUnitTests {
         assertThat(result.get(0).getZip()).isEqualTo(addressDto.getZip());
         assertThat(result.get(0).getStreet()).isEqualTo(addressDto.getStreet());
         assertThat(result.get(0).getState()).isEqualTo(addressDto.getState());
-
-
     }
 
     @Test
@@ -192,6 +190,38 @@ class AddressRepositoryUnitTests {
         List<GetAddressDto> result = addressRepository.getAddresses(user.getUsername());
 
         assertThat(result).hasSize(0);
+
+    }
+
+    @Test
+    public void existsById_ReturnsResponses_WithValidAddressId(){
+
+        User user = testDataUtil.validUser1();
+        userRepository.saveAndFlush(user);
+
+        Address addressDto = Address.builder()
+                .country("Pakistan")
+                .state("Balochistan")
+                .city("Quetta")
+                .zip("12345")
+                .street("Example Street")
+                .createdAt(LocalDateTime.now())
+                .createdBy(user.getUsername())
+                .user(User.builder()
+                        .id(1L)
+                        .build())
+                .build();
+
+
+        addressRepository.saveAndFlush(addressDto);
+
+        entityManager.clear();
+
+        boolean result = addressRepository.existsById(1L);
+        boolean result2 = addressRepository.existsById(2L);
+
+        assertThat(result).isTrue();
+        assertThat(result2).isFalse();
 
     }
 

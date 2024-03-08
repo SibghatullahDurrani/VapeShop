@@ -4,6 +4,7 @@ import com.sibghat.vape_shop.dtos.address.AddAddressDto;
 import com.sibghat.vape_shop.dtos.address.GetAddressDto;
 import com.sibghat.vape_shop.dtos.address.UpdateAddressDto;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,16 @@ public interface IAddressController {
             @PathVariable(name = "address_id") Long addressId,
             @Valid @RequestBody UpdateAddressDto updateAddressDto
             );
+
+    @DeleteMapping("/address/{username}/{address_id}")
+    @PreAuthorize("""
+    hasAnyRole("CLIENT", "ADMIN") and
+    #username == authentication.name
+""")
+    ResponseEntity<HttpStatus> deleteAddress(
+            @PathVariable String username,
+            @PathVariable(name = "address_id") Long addressId
+    );
 
 
 }

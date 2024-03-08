@@ -382,4 +382,82 @@ class AddressControllerIntegrationTests {
                 .content(updateAddressJson)
         ).andExpect(status().isForbidden());
     }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
+    void deleteAddress_Returns204NoContent_WithValidAddressIdAndUsernameAndClientRole() throws Exception{
+        User user = testDataUtil.validUser1();
+        userRepository.saveAndFlush(user);
+
+        AddAddressDto addAddressDto = addressTestDataUtil.addAddressDto();
+        addAddressDto.setUserId(null);
+        addressServices.addAddress(user.getUsername(),addAddressDto);
+
+
+        mockMvc.perform(delete("/address/" + user.getUsername() + "/" + "1")
+        ).andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    void deleteAddress_Returns204NoContent_WithValidAddressIdAndUsernameAndAdminRole() throws Exception{
+        User user = testDataUtil.validUser1();
+        userRepository.saveAndFlush(user);
+
+        AddAddressDto addAddressDto = addressTestDataUtil.addAddressDto();
+        addAddressDto.setUserId(null);
+        addressServices.addAddress(user.getUsername(),addAddressDto);
+
+
+        mockMvc.perform(delete("/address/" + user.getUsername() + "/" + "1")
+        ).andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    void deleteAddress_Returns404NotFound_WithInvalidAddressIdAndValidUsername() throws Exception{
+        User user = testDataUtil.validUser1();
+        userRepository.saveAndFlush(user);
+
+        AddAddressDto addAddressDto = addressTestDataUtil.addAddressDto();
+        addAddressDto.setUserId(null);
+        addressServices.addAddress(user.getUsername(),addAddressDto);
+
+
+        mockMvc.perform(delete("/address/" + user.getUsername() + "/" + "2")
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    void deleteAddress_Returns403Forbidden_WhenDeletingAddressThatIsNotTheirs() throws Exception{
+        User user = testDataUtil.validUser1();
+        User user2 = testDataUtil.validUser2();
+        userRepository.saveAndFlush(user);
+        userRepository.saveAndFlush(user2);
+
+        AddAddressDto addAddressDto = addressTestDataUtil.addAddressDto();
+        AddAddressDto addAddressDto2 = addressTestDataUtil.addAddressDto();
+        addAddressDto.setUserId(null);
+        addAddressDto2.setUserId(null);
+        addressServices.addAddress(user.getUsername(),addAddressDto);
+        addressServices.addAddress(user2.getUsername(),addAddressDto2);
+
+
+        mockMvc.perform(delete("/address/" + user.getUsername() + "/" + "2")
+        ).andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deleteAddress_Returns401Unauthorized_WhenUnAuthenticated() throws Exception{
+        mockMvc.perform(delete("/address/aqrar" + "1")
+        ).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    void deleteAddress_Returns403Forbidden_WhenDeletingOtherUsersAddress() throws Exception{
+        mockMvc.perform(delete("/address/sibghat/" + "1")
+        ).andExpect(status().isForbidden());
+    }
 }

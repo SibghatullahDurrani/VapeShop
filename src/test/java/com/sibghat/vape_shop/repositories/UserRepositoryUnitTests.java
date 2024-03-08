@@ -1,7 +1,9 @@
 package com.sibghat.vape_shop.repositories;
 
+import com.sibghat.vape_shop.AddressTestDataUtil;
 import com.sibghat.vape_shop.TestDataUtil;
 import com.sibghat.vape_shop.TestUtilMappers;
+import com.sibghat.vape_shop.domains.Address;
 import com.sibghat.vape_shop.domains.User;
 import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
@@ -27,9 +29,12 @@ public class UserRepositoryUnitTests {
     private UserRepository userRepository;
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private AddressRepository addressRepository;
 
     private final TestUtilMappers testUtilMappers = new TestUtilMappers();
     private final TestDataUtil testDataUtil = new TestDataUtil();
+    private final AddressTestDataUtil addressTestDataUtil = new AddressTestDataUtil();
 
     @Test
     public void save_ReturnsValidUser_WithValidUser(){
@@ -295,6 +300,24 @@ public class UserRepositoryUnitTests {
         assertThat(updatedUser.get().getVerificationCodeValidTill()).isEqualTo(verificationCodeValidTill);
         assertThat(updatedUser.get().getVerificationCode()).isEqualTo(verificationCode);
 
+    }
+
+    @Test
+    public void existsByAddressesContains_ReturnsTrue_WithValidAddressId(){
+        User user = testDataUtil.validUser1();
+        userRepository.saveAndFlush(user);
+
+        Address address = addressTestDataUtil.address();
+
+        var savedAddress = addressRepository.saveAndFlush(address);
+        var savedAddress2 = addressRepository.saveAndFlush(address);
+
+        boolean result = userRepository.existsByAddressesIdAndUsername(savedAddress.getId(),"xyz");
+
+        boolean result2 = userRepository.existsByAddressesIdAndUsername(savedAddress2.getId(),user.getUsername());
+
+        assertThat(result).isFalse();
+        assertThat(result2).isTrue();
     }
 
 

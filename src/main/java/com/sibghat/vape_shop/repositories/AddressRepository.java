@@ -13,6 +13,8 @@ public interface AddressRepository extends JpaRepository<Address,Long> {
 
     int countAddressByUserId(Long id);
 
+    boolean existsById(Long id);
+
     Optional<Address> findAddressById(Long id);
 
     @Query("""

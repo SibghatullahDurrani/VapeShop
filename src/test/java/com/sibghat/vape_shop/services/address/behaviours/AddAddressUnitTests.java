@@ -8,20 +8,16 @@ import com.sibghat.vape_shop.mappers.address.AddAddressDtoToAddressMapper;
 import com.sibghat.vape_shop.mappers.address.AddressToGetAddressDtoMapper;
 import com.sibghat.vape_shop.repositories.AddressRepository;
 import com.sibghat.vape_shop.repositories.UserRepository;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.InstanceOfAssertFactories.OPTIONAL_INT;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 

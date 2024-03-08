@@ -3,6 +3,7 @@ package com.sibghat.vape_shop.services.user.behaviours;
 import com.sibghat.vape_shop.dtos.user.GetUserByAdminDto;
 import com.sibghat.vape_shop.repositories.UserRepository;
 import com.sibghat.vape_shop.services.user.behaviours.interfaces.IGetAllUsersBehaviour;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ public class GetAllUsers implements IGetAllUsersBehaviour {
     }
 
     @Override
-    public ResponseEntity<Page<GetUserByAdminDto>> getAllUsers(int page, int size, String role, String username) {
+    public ResponseEntity<Page<@Valid GetUserByAdminDto>> getAllUsers(int page, int size, String role, String username) {
         PageRequest pageRequest = PageRequest.of(page,size);
         Page<GetUserByAdminDto> usersPage;
         if(username.isEmpty()){

@@ -10,6 +10,7 @@ import com.sibghat.vape_shop.services.conditionEvaluators.UserRelatedConditionEv
 import com.sibghat.vape_shop.services.user.behaviours.interfaces.IAddBehaviour;
 import com.sibghat.vape_shop.services.user.behaviours.interfaces.ISendVerificationEmailBehaviour;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +52,7 @@ public class AddClient implements IAddBehaviour {
     }
 
     @Override
-    public ResponseEntity<GetUserDto> add(AddUserDto userToAdd, String createdBy) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<@Valid GetUserDto> add(AddUserDto userToAdd, String createdBy) throws MessagingException, UnsupportedEncodingException {
         int VERIFICATION_CODE_EXPIRATION_TIME_IN_SECONDS = 600;
         userRelatedConditionEvaluators.checkThatUserDoesNotAlreadyExistsBeforeAddingANewUser(userToAdd);
         User user = addUserDtoToUserMapper.mapFrom(userToAdd);

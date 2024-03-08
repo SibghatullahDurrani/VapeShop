@@ -8,6 +8,7 @@ import com.sibghat.vape_shop.mappers.address.AddressToGetAddressDtoMapper;
 import com.sibghat.vape_shop.repositories.AddressRepository;
 import com.sibghat.vape_shop.repositories.UserRepository;
 import com.sibghat.vape_shop.services.address.behaviours.interfaces.IAddAddressBehaviour;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class AddAddress implements IAddAddressBehaviour {
     }
 
     @Override
-    public ResponseEntity<GetAddressDto> addAddress(String username, AddAddressDto addressToAdd) {
+    public ResponseEntity<@Valid GetAddressDto> addAddress(String username, AddAddressDto addressToAdd) {
         Optional<Long> userId = userRepository.getUserIdByUsername(username);
         if(userId.isPresent()){
             if(addressRepository.countAddressByUserId(userId.get()) >= 2){

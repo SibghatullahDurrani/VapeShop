@@ -7,6 +7,7 @@ import com.sibghat.vape_shop.mappers.user.UserToGetUserDtoMapper;
 import com.sibghat.vape_shop.repositories.UserRepository;
 import com.sibghat.vape_shop.services.conditionEvaluators.UserRelatedConditionEvaluators;
 import com.sibghat.vape_shop.services.user.behaviours.interfaces.IUpdateUserBehaviour;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class UpdateUser implements IUpdateUserBehaviour {
     }
 
     @Override
-    public ResponseEntity<GetUserDto> updateUser(String username, UpdateUserDto userToUpdateDto) {
+    public ResponseEntity<@Valid GetUserDto> updateUser(String username, UpdateUserDto userToUpdateDto) {
         Optional<User> userToUpdate = userRepository.findUserByUsername(username);
         userRelatedConditionEvaluators
                 .checkThatContactNumberDoesNotAlreadyExistsBeforeUpdatingUser(userToUpdateDto.getContactNumber());

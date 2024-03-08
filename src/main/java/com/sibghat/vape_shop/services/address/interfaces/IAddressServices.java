@@ -4,7 +4,7 @@ import com.sibghat.vape_shop.dtos.address.AddAddressDto;
 import com.sibghat.vape_shop.dtos.address.GetAddressDto;
 import org.springframework.http.ResponseEntity;
 
-public interface IClientAddressServices {
+public interface IAddressServices {
 
     ResponseEntity<GetAddressDto> addAddress(String username, AddAddressDto addressToAdd);
 }

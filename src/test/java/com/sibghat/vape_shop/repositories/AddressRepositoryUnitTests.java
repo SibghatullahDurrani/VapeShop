@@ -115,4 +115,19 @@ class AddressRepositoryUnitTests {
 
     }
 
+    @Test
+    public void countAddressByUserId_ReturnsValidCount_WithNoAddresses(){
+
+        User user = testDataUtil.validUser1();
+        userRepository.saveAndFlush(user);
+
+        entityManager.clear();
+
+        int result = addressRepository.countAddressByUserId(user.getId());
+
+        assertThat(result).isEqualTo(0);
+
+
+    }
+
 }

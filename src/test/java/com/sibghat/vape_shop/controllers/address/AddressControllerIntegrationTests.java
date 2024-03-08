@@ -1,6 +1,7 @@
 package com.sibghat.vape_shop.controllers.address;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 import com.sibghat.vape_shop.AddressTestDataUtil;
 import com.sibghat.vape_shop.TestDataUtil;
 import com.sibghat.vape_shop.domains.User;
@@ -19,6 +20,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -149,5 +152,76 @@ class AddressControllerIntegrationTests {
                 .content(addAddressJson)
         ).andExpect(status().isForbidden()
         );
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "ADMIN")
+    void getAddress_Returns200OK_WithValidUsernameAndAdminRole() throws Exception{
+        User user = testDataUtil.validUser1();
+        userRepository.saveAndFlush(user);
+
+        AddAddressDto addAddressDto = addressTestDataUtil.addAddressDto();
+        AddAddressDto addAddressDto2 = addressTestDataUtil.addAddressDto();
+        addAddressDto.setUserId(null);
+        addAddressDto2.setUserId(null);
+        addressServices.addAddress(user.getUsername(),addAddressDto);
+        addressServices.addAddress(user.getUsername(),addAddressDto2);
+
+        var result = mockMvc.perform(get("/address/" + user.getUsername())
+        ).andExpect(status().isOk()
+        ).andExpect(jsonPath("$.[1].id").isNumber()
+        ).andExpect(jsonPath("$.[1].street").value(addAddressDto.getStreet())
+        ).andExpect(jsonPath("$.[1].city").value(addAddressDto.getCity())
+        ).andExpect(jsonPath("$.[1].state").value(addAddressDto.getState())
+        ).andExpect(jsonPath("$.[1].country").value(addAddressDto.getCountry())
+        ).andExpect(jsonPath("$.[1].zip").value(addAddressDto.getZip())
+        ).andReturn();
+
+        List<GetAddressDto> results = JsonPath.read(result.getResponse().getContentAsString(),"$");
+        assertThat(results).hasSize(2);
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
+    void getAddress_Returns200OK_WithValidUsernameAndClientRole() throws Exception{
+        User user = testDataUtil.validUser1();
+        userRepository.saveAndFlush(user);
+
+        AddAddressDto addAddressDto = addressTestDataUtil.addAddressDto();
+        AddAddressDto addAddressDto2 = addressTestDataUtil.addAddressDto();
+        addAddressDto.setUserId(null);
+        addAddressDto2.setUserId(null);
+        addressServices.addAddress(user.getUsername(),addAddressDto);
+        addressServices.addAddress(user.getUsername(),addAddressDto2);
+
+        var result = mockMvc.perform(get("/address/" + user.getUsername())
+        ).andExpect(status().isOk()
+        ).andExpect(jsonPath("$.[1].id").isNumber()
+        ).andExpect(jsonPath("$.[1].street").value(addAddressDto.getStreet())
+        ).andExpect(jsonPath("$.[1].city").value(addAddressDto.getCity())
+        ).andExpect(jsonPath("$.[1].state").value(addAddressDto.getState())
+        ).andExpect(jsonPath("$.[1].country").value(addAddressDto.getCountry())
+        ).andExpect(jsonPath("$.[1].zip").value(addAddressDto.getZip())
+        ).andReturn();
+
+        List<GetAddressDto> results = JsonPath.read(result.getResponse().getContentAsString(),"$");
+        assertThat(results).hasSize(2);
+    }
+
+    @Test
+    void getAddress_Returns401Unauthorized_WithNoAuthentication() throws Exception{
+
+        mockMvc.perform(get("/address/aqrar")
+        ).andExpect(status().isUnauthorized());
+
+    }
+
+    @Test
+    @WithMockUser(username = "aqrar", roles = "CLIENT")
+    void getAddress_Returns403Forbidden_WithInvalidUsernameSearch() throws Exception{
+
+        mockMvc.perform(get("/address/sibghat")
+        ).andExpect(status().isForbidden());
+
     }
 }

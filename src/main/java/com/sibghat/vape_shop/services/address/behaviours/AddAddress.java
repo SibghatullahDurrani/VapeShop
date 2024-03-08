@@ -37,7 +37,7 @@ public class AddAddress implements IAddAddressBehaviour {
     public ResponseEntity<GetAddressDto> addAddress(String username, AddAddressDto addressToAdd) {
         Optional<Long> userId = userRepository.getUserIdByUsername(username);
         if(userId.isPresent()){
-            if(addressRepository.countAddressByUserId(userId.get()) > 2){
+            if(addressRepository.countAddressByUserId(userId.get()) >= 2){
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             addressToAdd.setUserId(userId.get());

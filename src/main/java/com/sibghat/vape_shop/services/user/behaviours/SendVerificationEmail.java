@@ -24,9 +24,9 @@ public class SendVerificationEmail implements ISendVerificationEmailBehaviour {
         String toAddress = user.getEmail();
         String fromAddress = "test@vapeshop.com";
         String senderName = "Vape Shop";
-        String subject = "Please verify your registration";
+        String subject = "Please verify your account";
         String content = "Dear [[name]],<br>"
-                + "Please click the link below to verify your registration:<br>"
+                + "Please click the link below to verify your account:<br>"
                 + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>"
                 + "Thank you,<br>"
                 + "Vape Shop.";

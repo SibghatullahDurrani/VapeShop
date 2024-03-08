@@ -23,6 +23,9 @@ public interface IClientController {
     @PatchMapping("/users/verify/{verification_code}")
     ResponseEntity<HttpStatus> verifyUser(@PathVariable String verification_code);
 
+    @PatchMapping("users/enable/{username}")
+    ResponseEntity<HttpStatus> enableAccount(@PathVariable String username) throws MessagingException, UnsupportedEncodingException;
+
     @GetMapping("/users/{username}")
     @PreAuthorize("""
     #username == authentication.name and

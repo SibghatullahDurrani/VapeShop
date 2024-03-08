@@ -5,13 +5,12 @@ import com.sibghat.vape_shop.dtos.user.AddUserDto;
 import com.sibghat.vape_shop.dtos.user.GetUserDto;
 import com.sibghat.vape_shop.dtos.user.UpdatePasswordDto;
 import com.sibghat.vape_shop.dtos.user.UpdateUserDto;
-import com.sibghat.vape_shop.services.user.interfaces.IClientServices;
 import com.sibghat.vape_shop.services.user.ClientServices;
+import com.sibghat.vape_shop.services.user.interfaces.IClientServices;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,6 +36,11 @@ public class ClientController implements IClientController {
     @Override
     public ResponseEntity<HttpStatus> verifyUser(@PathVariable String verification_code){
         return clientServices.verifyUser(verification_code);
+    }
+
+    @Override
+    public ResponseEntity<HttpStatus> enableAccount(@PathVariable String username) throws MessagingException, UnsupportedEncodingException {
+        return clientServices.enableAccount(username);
     }
 
    @Override

@@ -23,4 +23,5 @@ public interface IClientServices {
 
     ResponseEntity<HttpStatus> updatePassword(String username, UpdatePasswordDto updatePasswordDto);
     ResponseEntity<HttpStatus> disableUser(String username);
+    public ResponseEntity<HttpStatus> enableAccount(String username) throws MessagingException, UnsupportedEncodingException;
 }

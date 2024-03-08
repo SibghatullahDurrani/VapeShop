@@ -102,6 +102,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Transactional
     void deleteVerificationCode(String username);
 
+
+    @Query("""
+    UPDATE User u set u.verificationCode = ?1, u.verificationCodeValidTill = ?2
+    WHERE u.username = ?3
+""")
+    @Modifying
+    @Transactional
+    void addVerificationCode(String verificationCode, Long verificationCodeValidTill, String username);
+
     @Query("""
     UPDATE User u set
     u.enabled = false, u.lastModifiedBy = ?1, u.lastModifiedAt = ?2

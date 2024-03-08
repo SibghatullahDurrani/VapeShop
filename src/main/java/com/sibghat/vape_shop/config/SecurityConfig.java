@@ -34,6 +34,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(req -> req
                 .requestMatchers(HttpMethod.POST,"/users").permitAll()
                 .requestMatchers(HttpMethod.PATCH,"/users/verify/*").permitAll()
+                .requestMatchers(HttpMethod.PATCH, "/users/enable/*").permitAll()
                 .anyRequest().authenticated());
 
         return http.build();

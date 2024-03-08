@@ -276,6 +276,27 @@ public class UserRepositoryUnitTests {
         assertThat(updatedUser.get().getLastModifiedBy()).isEqualTo(user.getUsername());
     }
 
+    @Test
+    public void addVerificationCode_AddsVerificationCode_WithValidUsername(){
+        User user = testDataUtil.validUser1();
+        userRepository.save(user);
+
+        String verificationCode = "abc";
+        Long verificationCodeValidTill = 123L;
+
+        userRepository.addVerificationCode(verificationCode,verificationCodeValidTill,user.getUsername());
+
+        entityManager.clear();
+
+        Optional<User> updatedUser = userRepository.findUserByUsername(user.getUsername());
+
+        assertThat(updatedUser).isPresent();
+        assertThat(updatedUser.get().getUsername()).isEqualTo(user.getUsername());
+        assertThat(updatedUser.get().getVerificationCodeValidTill()).isEqualTo(verificationCodeValidTill);
+        assertThat(updatedUser.get().getVerificationCode()).isEqualTo(verificationCode);
+
+    }
+
 
 
 

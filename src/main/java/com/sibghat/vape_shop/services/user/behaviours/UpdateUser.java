@@ -39,7 +39,7 @@ public class UpdateUser implements IUpdateUserBehaviour {
             userToUpdate.get().setContactNumber(userToUpdateDto.getContactNumber());
             userToUpdate.get().setLastModifiedAt(LocalDateTime.now());
             userToUpdate.get().setLastModifiedBy(username);
-            User savedUser = userRepository.save(userToUpdate.get());
+            User savedUser = userRepository.saveAndFlush(userToUpdate.get());
 
             return new ResponseEntity<>(userToGetUserDtoMapper.mapFrom(savedUser),HttpStatus.OK);
         }else{

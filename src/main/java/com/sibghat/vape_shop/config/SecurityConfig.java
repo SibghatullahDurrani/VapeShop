@@ -10,8 +10,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.security.SecureRandom;
+import java.util.List;
 
 @Configuration
 @EnableMethodSecurity()
@@ -30,6 +33,18 @@ public class SecurityConfig {
         );
 
         http.csrf(AbstractHttpConfigurer::disable);
+
+        http.cors(c -> {
+            CorsConfigurationSource source = s -> {
+                CorsConfiguration cc = new CorsConfiguration();
+                cc.setAllowCredentials(true);
+                cc.setAllowedOrigins(List.of("http://127.0.0.1:4200"));
+                cc.setAllowedHeaders(List.of("*"));
+                cc.setAllowedMethods(List.of("*"));
+                return cc;
+            };
+            c.configurationSource(source);
+        });
 
         http.authorizeHttpRequests(req -> req
                 .requestMatchers(HttpMethod.POST,"/users").permitAll()

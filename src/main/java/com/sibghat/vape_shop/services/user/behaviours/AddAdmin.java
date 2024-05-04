@@ -31,7 +31,7 @@ public class AddAdmin implements IAddBehaviour {
     private final ISendVerificationEmailBehaviour sendVerificationEmailBehaviour;
 
 //    @Value("${emailVerificationURL}")
-    private String emailVerificationURL = "localhost:3000/users/verify/";
+    private String emailVerificationURL = "http://127.0.0.1:4200/verifyemail/";
 
     public AddAdmin(
             UserRepository userRepository,

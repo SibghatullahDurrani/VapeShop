@@ -35,7 +35,8 @@ public class Category {
     @Column(
             nullable = false
     )
-    private LocalDateTime createdAt;
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     private LocalDateTime lastModifiedAt;
 

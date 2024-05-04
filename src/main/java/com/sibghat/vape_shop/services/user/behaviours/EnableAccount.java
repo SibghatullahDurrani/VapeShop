@@ -30,7 +30,7 @@ public class EnableAccount implements IEnableAccountBehaviour {
         if(!userRepository.existsByUsername(username)){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }else{
-            String emailVerificationURL = "localhost:3000/users/verify/";
+            String emailVerificationURL = "http://127.0.0.1:4200/verifyemail/";
             String verificationCode = UUID.randomUUID().toString();
             Long verificationCodeValidTill = Instant.now().getEpochSecond() + 600;
 
